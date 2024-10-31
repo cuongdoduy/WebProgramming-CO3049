@@ -1,0 +1,160 @@
+import React from 'react'
+import {
+  Navbar,
+  Collapse,
+  Typography,
+  Button,
+  IconButton,
+  List,
+  ListItem,
+} from '@material-tailwind/react'
+import {
+  Bars3Icon,
+  HeartIcon,
+  ShoppingBagIcon,
+  XMarkIcon,
+} from '@heroicons/react/24/outline'
+
+const NavList = () => {
+  return (
+    <List className="mt-4 mb-6 p-0 lg:mt-0 lg:mb-0 lg:flex-row lg:p-1">
+      <Typography
+        as="a"
+        href="/"
+        variant="h6"
+        color="blue-gray"
+        className="font-medium">
+        <ListItem className="flex items-center gap-2 py-2 px-8">Home</ListItem>
+      </Typography>
+      <Typography
+        as="a"
+        href="/about"
+        variant="h6"
+        color="blue-gray"
+        className="font-medium">
+        <ListItem className="flex items-center gap-2 py-2 px-8">About</ListItem>
+      </Typography>
+      {/* <NavListMenu /> */}
+      <Typography
+        as="a"
+        href="/contact"
+        variant="h6"
+        color="blue-gray"
+        className="font-medium">
+        <ListItem className="flex items-center gap-2 py-2 px-8">
+          Contact
+        </ListItem>
+      </Typography>
+      <Typography
+        as="a"
+        href="/auth/login"
+        variant="h6"
+        color="blue-gray"
+        className="font-medium">
+        <ListItem className="flex items-center gap-2 py-2 px-8">
+          Sign Up
+        </ListItem>
+      </Typography>
+    </List>
+  )
+}
+
+const NavbarWithMegaMenu = () => {
+  const [openNav, setOpenNav] = React.useState(false)
+
+  React.useEffect(() => {
+    window.addEventListener(
+      'resize',
+      () => window.innerWidth >= 960 && setOpenNav(false)
+    )
+  }, [])
+
+  return (
+    <Navbar className="mx-auto w-full mx-0 py-2 max-w-full rounded-b-none shadow-none px-0">
+      <div className="flex items-center justify-between text-blue-gray-900 w-[90%] mx-auto mt-4 mb-2">
+        <Typography
+          as="a"
+          href="#"
+          variant="h5"
+          className="mr-4 cursor-pointer py-1.5 lg:ml-2 uppercase font-bold">
+          Exclusive
+        </Typography>
+        <div className="hidden lg:block">
+          <NavList />
+        </div>
+        <div className="hidden gap-2 lg:flex">
+          <form className="max-w-md mx-auto flex border border-gray-300 rounded-md bg-gray-50 p-1">
+            <div className="relative bg-gray-50 ml-2 py-2 mr-4">
+              <input
+                type="search"
+                id="default-search"
+                className="block w-full text-sm bg-gray-50"
+                placeholder="What are you looking for?"
+                required
+              />
+            </div>
+            <button
+              type="submit"
+              className="font-medium rounded-lg text-sm mr-2 py-2">
+              <div className="flex items-center ps-3 pointer-events-none">
+                <svg
+                  className="w-4 h-4 text-gray-500 dark:text-gray-400"
+                  aria-hidden="true"
+                  xmlns="http://www.w3.org/2000/svg"
+                  fill="none"
+                  viewBox="0 0 20 20">
+                  <path
+                    color="black"
+                    stroke="currentColor"
+                    strokeLinecap="round"
+                    strokeLinejoin="round"
+                    strokeWidth="2"
+                    d="m19 19-4-4m0-7A7 7 0 1 1 1 8a7 7 0 0 1 14 0Z"
+                  />
+                </svg>
+              </div>
+            </button>
+          </form>
+
+          {/* <Button variant="text" size="sm" color="blue-gray">
+            Log In
+          </Button>
+          <Button variant="gradient" size="sm">
+            Sign In
+          </Button> */}
+          <div className="flex justify-center flex-col ml-2">
+            <HeartIcon className="h-6 w-6" strokeWidth={2} />
+          </div>
+          <div className="flex justify-center flex-col ml-2">
+            <ShoppingBagIcon className="h-6 w-6" strokeWidth={2} />
+          </div>
+        </div>
+        <IconButton
+          variant="text"
+          color="blue-gray"
+          className="lg:hidden"
+          onClick={() => setOpenNav(!openNav)}>
+          {openNav ? (
+            <XMarkIcon className="h-6 w-6" strokeWidth={2} />
+          ) : (
+            <Bars3Icon className="h-6 w-6" strokeWidth={2} />
+          )}
+        </IconButton>
+      </div>
+      <Collapse open={openNav}>
+        <NavList />
+        <div className="flex w-full flex-nowrap items-center gap-2 lg:hidden">
+          <Button variant="outlined" size="sm" color="blue-gray" fullWidth>
+            Log In
+          </Button>
+          <Button variant="gradient" size="sm" fullWidth>
+            Sign In
+          </Button>
+        </div>
+      </Collapse>
+      <hr className="my-2 border border-gray-400" />
+    </Navbar>
+  )
+}
+
+export default NavbarWithMegaMenu
