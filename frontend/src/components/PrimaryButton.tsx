@@ -7,7 +7,7 @@ interface PrimaryButtonProps {
 
 const PrimaryButton: React.FC<PrimaryButtonProps> = ({ title }) => {
   return (
-    <Button className="bg-[#DB4444] rounded-md min-w-[200px] py-4 w-fit px-2">
+    <Button className="bg-[#DB4444] rounded-md min-w-[200px] py-4 w-auto px-2">
       {title}
     </Button>
   )

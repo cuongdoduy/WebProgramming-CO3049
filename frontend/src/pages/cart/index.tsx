@@ -63,7 +63,7 @@ const Cart = () => {
                   as="p"
                   variant="paragraph"
                   className="py-1.5 font-[400] text-[18px]">
-                  ${cartItems.reduce((acc, item) => acc + item.price, 0)}
+                  ${cartItems.reduce((acc, item) => acc + item.price*item.quantity, 0)}
                 </Typography>
               </div>
               <hr className="my-2 border border-gray-400" />
@@ -93,12 +93,14 @@ const Cart = () => {
                   as="p"
                   variant="paragraph"
                   className="py-1.5 font-[400] text-[18px]">
-                  ${cartItems.reduce((acc, item) => acc + item.price, 0)}
+                  ${cartItems.reduce((acc, item) => acc + item.price*item.quantity, 0)}
                 </Typography>
               </div>
-              <div className='w-fit mx-auto my-2'>
-                <PrimaryButton title="Proceed To Checkout" />
-              </div>
+              <Link href="/cart/checkout">
+                <div className="w-fit mx-auto my-2">
+                  <PrimaryButton title="Proceed To Checkout" />
+                </div>
+              </Link>
             </div>
           </div>
         </div>

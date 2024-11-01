@@ -25,7 +25,7 @@ const WishlistItem: React.FC<{
             </div>
           </div>
         </div>
-        <div className="flex flex-col items-center p-8 h-auto h-[240px]">
+        <div className="flex flex-col items-center p-8 h-auto min-h-[240px]">
           <div className="mt-auto">
             <Image src={image} alt={title} width={178} height={129} />
           </div>

@@ -13,23 +13,14 @@ interface EmployeeProps {
   }
 }
 
-const Employee: React.FC<EmployeeProps> = ({
-  name,
-  position,
-  image
-}) => {
+const Employee: React.FC<EmployeeProps> = ({ name, position, image }) => {
   return (
     <div className="flex flex-col ml-12">
       <div className="bg-[#F5F5F5] px-[60px] pt-[40px] w-full">
-        <div className="h-[390px] w-[240px] mx-auto">
-          <Image
-            src={image}
-            alt={name}
-            width={0}
-            height={0}
-            sizes="100vw"
-            className="w-full h-full"
-          />
+        <div className="flex flex-col items-center h-auto min-h-[290px]">
+          <div className="mt-auto">
+            <Image src={image} alt={name} width={178} height={210} />
+          </div>
         </div>
       </div>
       <div className="">

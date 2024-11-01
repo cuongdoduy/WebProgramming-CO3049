@@ -136,7 +136,7 @@ const NavbarWithMegaMenu = () => {
           <Link href={'/wishlist'} className="m-0">
             <div className="flex justify-center flex-col ml-2 items-center h-full relative">
               <HeartIcon className="h-6 w-6" strokeWidth={2} />
-              <div className="absolute top-1 -right-2 bg-red-500 text-white rounded-full w-5 h-5 flex items-center justify-center">
+              <div className="absolute top-1 -right-2 bg-[#DB4444] text-white rounded-full w-5 h-5 flex items-center justify-center">
                 {totalItems()}
               </div>
             </div>
@@ -144,7 +144,7 @@ const NavbarWithMegaMenu = () => {
           <Link href={'/cart'} className="m-0">
             <div className="flex justify-center flex-col ml-2 items-center h-full relative">
               <ShoppingBagIcon className="h-6 w-6" strokeWidth={2} />
-              <div className="absolute top-1 -right-2 bg-red-500 text-white rounded-full w-5 h-5 flex items-center justify-center">
+              <div className="absolute top-1 -right-2 bg-[#DB4444] text-white rounded-full w-5 h-5 flex items-center justify-center">
                 {totalCartItems()}
               </div>
             </div>
