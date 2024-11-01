@@ -1,4 +1,4 @@
-import React from 'react'
+import React, { useContext } from 'react'
 import {
   Navbar,
   Collapse,
@@ -14,6 +14,9 @@ import {
   ShoppingBagIcon,
   XMarkIcon,
 } from '@heroicons/react/24/outline'
+import Link from 'next/link'
+import { WishlistContext } from '@/contexts/WishlistContext'
+import { CartContext } from '@/contexts/CartContext'
 
 const NavList = () => {
   return (
@@ -69,6 +72,14 @@ const NavbarWithMegaMenu = () => {
     )
   }, [])
 
+  const { totalItems } = useContext(WishlistContext) || {
+    totalItems: () => 0,
+  }
+
+  const { totalItems: totalCartItems } = useContext(CartContext) || {
+    totalItems: () => 0,
+  }
+
   return (
     <Navbar className="mx-auto w-full mx-0 py-2 max-w-full rounded-b-none shadow-none px-0">
       <div className="flex items-center justify-between text-blue-gray-900 w-[90%] mx-auto mt-4 mb-2">
@@ -122,12 +133,22 @@ const NavbarWithMegaMenu = () => {
           <Button variant="gradient" size="sm">
             Sign In
           </Button> */}
-          <div className="flex justify-center flex-col ml-2">
-            <HeartIcon className="h-6 w-6" strokeWidth={2} />
-          </div>
-          <div className="flex justify-center flex-col ml-2">
-            <ShoppingBagIcon className="h-6 w-6" strokeWidth={2} />
-          </div>
+          <Link href={'/wishlist'} className="m-0">
+            <div className="flex justify-center flex-col ml-2 items-center h-full relative">
+              <HeartIcon className="h-6 w-6" strokeWidth={2} />
+              <div className="absolute top-1 -right-2 bg-red-500 text-white rounded-full w-5 h-5 flex items-center justify-center">
+                {totalItems()}
+              </div>
+            </div>
+          </Link>
+          <Link href={'/cart'} className="m-0">
+            <div className="flex justify-center flex-col ml-2 items-center h-full relative">
+              <ShoppingBagIcon className="h-6 w-6" strokeWidth={2} />
+              <div className="absolute top-1 -right-2 bg-red-500 text-white rounded-full w-5 h-5 flex items-center justify-center">
+                {totalCartItems()}
+              </div>
+            </div>
+          </Link>
         </div>
         <IconButton
           variant="text"
