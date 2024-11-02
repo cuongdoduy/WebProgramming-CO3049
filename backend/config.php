@@ -12,7 +12,7 @@ define('MODELS', 'Models/');
 define('DATABASE', [
     'Port'   => '3306',
     'Host'   => 'localhost',
-    'Driver' => 'PDO',
+    'Driver' => 'MySQLi',
     'Name'   => 'shopping',
     'User'   => 'root',
     'Pass'   => '',

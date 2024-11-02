@@ -29,7 +29,7 @@ class DatabaseAdapter {
      * @param $database
      */   
     public function __construct($driver, $hostname, $username, $password, $database, $port) {
-        if ($driver == 'pdo') {
+        if ($driver == 'PDO') {
             $this->dbConnection = new DB\PDO($hostname, $username, $password, $database, $port);
         } else {
             $this->dbConnection = new DB\MySQLi($hostname, $username, $password, $database, $port);
