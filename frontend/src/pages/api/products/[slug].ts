@@ -10,10 +10,10 @@ const GetProductForYou = async (
     const url = process.env.NEXT_PUBLIC_REDIRECT_URI
 
     const product_images: Array<string> = [
-      `${url}/images/Havic-HV-G92-Gamepad/image_1.png`,
-      `${url}/images/Havic-HV-G92-Gamepad/image_2.png`,
-      `${url}/images/Havic-HV-G92-Gamepad/image_3.png`,
-      `${url}/images/Havic-HV-G92-Gamepad/image_4.png`,
+      `${url}/images/Havic-Hv-G92-Gamepad/image_1.png`,
+      `${url}/images/Havic-Hv-G92-Gamepad/image_2.png`,
+      `${url}/images/Havic-Hv-G92-Gamepad/image_3.png`,
+      `${url}/images/Havic-Hv-G92-Gamepad/image_4.png`,
     ]
 
     const product_data: {
