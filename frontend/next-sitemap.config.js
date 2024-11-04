@@ -1,5 +1,5 @@
 module.exports = {
-    siteUrl: 'https://www.exclusive.com.vn',
+    siteUrl: 'https://web-programming-co-3049.vercel.app',
     generateRobotsTxt: false,
   };
   
