@@ -1,3 +1,54 @@
 @tailwind base;
 @tailwind components;
 @tailwind utilities;
+
+/* Hide scroll bar: */
+.hide-scrollbar {
+  overflow: scroll;
+  /* Hide scroll bar: */
+  -ms-overflow-style: none;
+  scrollbar-width: none;
+}
+
+/* Hide scroll bar: */
+.hide-scrollbar::-webkit-scrollbar {
+  display: none;
+}
+
+/* Hide scroll bar: */
+.hide-scrollbar::-webkit-scrollbar-thumb {
+  background-color: transparent;
+}
+
+::-webkit-scrollbar {
+  width: 2px;
+}
+
+/* Track */
+::-webkit-scrollbar-track {
+  background: #f1f1f1;
+}
+
+/* Handle */
+::-webkit-scrollbar-thumb {
+  background: #888;
+  border-radius: 5px;
+}
+
+/* Handle on hover */
+::-webkit-scrollbar-thumb:hover {
+  background: #555;
+}
+
+@keyframes fadeIn {
+  from {
+    opacity: 0;
+  }
+  to {
+    opacity: 1;
+  }
+}
+
+.animate-fadeIn {
+  animation: fadeIn 0.5s ease-in forwards;
+}

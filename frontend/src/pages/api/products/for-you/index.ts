@@ -45,6 +45,26 @@ const GetProductForYou = async (req: NextApiRequest, res: NextApiResponse<any>) 
           rating: 5,
           reviews: 40,
         },
+        {
+            id: 5,
+            title: 'Wireless Keyboards',
+            price: 100,
+            discount: 20,
+            quantity: 1,
+            image: 'http://localhost:3000/images/keyboard.png',
+            rating: 4.5,
+            reviews: 30,
+          },
+          {
+            id: 6,
+            title: 'ASUS FHD Gaming Laptops',
+            price: 150,
+            discount: 30,
+            quantity: 1,
+            image: 'http://localhost:3000/images/ideapad.png',
+            rating: 5,
+            reviews: 40,
+          },
       ],
     }
 

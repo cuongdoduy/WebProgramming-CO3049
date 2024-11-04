@@ -1,20 +1,40 @@
-import React, { Fragment, useContext, useEffect, useState } from 'react'
-
-import { Breadcrumbs, Typography } from '@material-tailwind/react'
-import NavbarWithMegaMenu from '@/components/Navbar/Navbar'
 import Footer from '@/components/Footer/Footer'
-import Link from 'next/link'
+import NavbarWithMegaMenu from '@/components/Navbar/Navbar'
 import SecondaryButton from '@/components/SecondaryButton'
-import { WishlistContext } from '@/contexts/WishlistContext'
-import WishlistList from '@/page-sections/WishlistPage/WishlistList'
-import ForYouList from '@/page-sections/WishlistPage/ForYouList'
-import Head from 'next/head'
 import constants from '@/constant/schema-data'
+import ProductDescription from '@/page-sections/ProductDetailPage/ProductDescription'
+import ProductImageList from '@/page-sections/ProductDetailPage/ProductImageList'
+import ForYouList from '@/page-sections/WishlistPage/ForYouList'
+import { Breadcrumbs, Typography } from '@material-tailwind/react'
+import Head from 'next/head'
+import Link from 'next/link'
+import React, { Fragment, useEffect, useState } from 'react'
 
-const Wishlist = () => {
-  const { wishlistItems } = useContext(WishlistContext) || {
-    wishlistItems: [],
-  }
+const ProductDetail = () => {
+  const [productData, setProductData] = useState<{
+    name: string
+    rate: number
+    reviews: number
+    status: 'In Stock' | 'Out of Stock'
+    price: number
+    discount: number
+    description: string
+    colors: Array<string>
+    sizes: Array<'XS' | 'S' | 'M' | 'L' | 'XL' | 'XXL'>
+    images: Array<string>
+  }>({
+    name: '',
+    rate: 0,
+    reviews: 0,
+    status: 'In Stock',
+    price: 0,
+    discount: 0,
+    description: '',
+    colors: [],
+    sizes: [],
+    images: [],
+  })
+
   const [forYouItems, setForYouItems] = useState<
     Array<{
       id: number
@@ -29,35 +49,47 @@ const Wishlist = () => {
 
   useEffect(() => {
     const fetchData = async () => {
-      const response = await fetch('/api/products/for-you')
-      const data = await response.json()
-      setForYouItems(data)
+      const product_data = fetch('/api/products/havic-hv-g92-gamepad')
+      const items_for_you = fetch('/api/products/for-you')
+      const [productDataResponse, forYouItemsResponse] = await Promise.all([
+        product_data,
+        items_for_you,
+      ])
+
+      const data = await productDataResponse.json()
+      setProductData(data.data)
+
+      const forYouItems = await forYouItemsResponse.json()
+      setForYouItems(forYouItems)
     }
     fetchData()
   }, [])
+
+  console.log(productData)
 
   return (
     <Fragment>
       <MetaTags />
       <NavbarWithMegaMenu />
-      <div className="w-[80%] mx-auto my-12">
+      <main className="w-[80%] mx-auto my-12">
         <Breadcrumbs className="bg-white p-0">
           <Link href="/" className="opacity-60">
             Home
           </Link>
-          <Link href="/wishlist">Wishlist</Link>
+          <Link href="/products">Products</Link>
+          <Link
+            href="/products/havic-hv-g92-gamepad
+          ">
+            Havic HV G-92 Gamepad
+          </Link>
         </Breadcrumbs>
-        <div className="my-12 mb-6 flex justify-between w-full items-center">
-          <Typography
-            as="h5"
-            variant="h5"
-            className="py-1.5 text-[20px] font-normal">
-            Wishlist ({wishlistItems.length})
-          </Typography>
-          <SecondaryButton title="Move All To Bag" />
-        </div>
-        <div className="mt-[60px]">
-          <WishlistList data={wishlistItems} />
+        <div className="mt-[60px] grid grid-cols-12 gap-x-6">
+          <div className="col-span-8">
+            <ProductImageList productImages={productData.images} />
+          </div>
+          <div className="col-span-4">
+            <ProductDescription data={productData} />
+          </div>
         </div>
         <div className="my-12 mb-6 flex justify-between w-full items-center">
           <div className="flex items-center justify-start gap-x-4">
@@ -66,15 +98,17 @@ const Wishlist = () => {
               as="h5"
               variant="h5"
               className="py-1.5 text-[20px] font-normal">
-              Just For You
+              Related Products
             </Typography>
           </div>
           <SecondaryButton title="See All" />
         </div>
         <div className="mt-[60px]">
-          <ForYouList data={forYouItems} />
+          <div className="mt-[60px]">
+            <ForYouList data={forYouItems} />
+          </div>
         </div>
-      </div>
+      </main>
       <Footer />
     </Fragment>
   )
@@ -162,4 +196,4 @@ const MetaTags = () => {
   )
 }
 
-export default Wishlist
+export default ProductDetail

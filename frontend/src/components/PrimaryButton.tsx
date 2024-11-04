@@ -3,11 +3,12 @@ import React from 'react'
 
 interface PrimaryButtonProps {
   title: string
+  className?: string
 }
 
-const PrimaryButton: React.FC<PrimaryButtonProps> = ({ title }) => {
+const PrimaryButton: React.FC<PrimaryButtonProps> = ({ title, className }) => {
   return (
-    <Button className="bg-[#DB4444] rounded-md min-w-[200px] py-4 w-auto px-2">
+    <Button className={`bg-[#DB4444] rounded-md min-w-[200px] p-2 w-auto ${className}`}>
       {title}
     </Button>
   )

@@ -21,43 +21,35 @@ import { CartContext } from '@/contexts/CartContext'
 const NavList = () => {
   return (
     <List className="mt-4 mb-6 p-0 lg:mt-0 lg:mb-0 lg:flex-row lg:p-1">
-      <Typography
-        as="a"
-        href="/"
-        variant="h6"
-        color="blue-gray"
-        className="font-medium">
-        <ListItem className="flex items-center gap-2 py-2 px-8">Home</ListItem>
-      </Typography>
-      <Typography
-        as="a"
-        href="/about"
-        variant="h6"
-        color="blue-gray"
-        className="font-medium">
-        <ListItem className="flex items-center gap-2 py-2 px-8">About</ListItem>
-      </Typography>
+      <Link href={'/'} className="m-0">
+        <Typography variant="h6" color="blue-gray" className="font-medium">
+          <ListItem className="flex items-center gap-2 py-2 px-8">
+            Home
+          </ListItem>
+        </Typography>
+      </Link>
+      <Link href={'/about'} className="m-0">
+        <Typography variant="h6" color="blue-gray" className="font-medium">
+          <ListItem className="flex items-center gap-2 py-2 px-8">
+            About
+          </ListItem>
+        </Typography>
+      </Link>
       {/* <NavListMenu /> */}
-      <Typography
-        as="a"
-        href="/contact"
-        variant="h6"
-        color="blue-gray"
-        className="font-medium">
-        <ListItem className="flex items-center gap-2 py-2 px-8">
-          Contact
-        </ListItem>
-      </Typography>
-      <Typography
-        as="a"
-        href="/auth/login"
-        variant="h6"
-        color="blue-gray"
-        className="font-medium">
-        <ListItem className="flex items-center gap-2 py-2 px-8">
-          Sign Up
-        </ListItem>
-      </Typography>
+      <Link href={'/contact'} className="m-0">
+        <Typography variant="h6" color="blue-gray" className="font-medium">
+          <ListItem className="flex items-center gap-2 py-2 px-8">
+            Contact
+          </ListItem>
+        </Typography>
+      </Link>
+      <Link href={'/auth/login'} className="m-0">
+        <Typography variant="h6" color="blue-gray" className="font-medium">
+          <ListItem className="flex items-center gap-2 py-2 px-8">
+            Sign Up
+          </ListItem>
+        </Typography>
+      </Link>
     </List>
   )
 }
@@ -95,12 +87,12 @@ const NavbarWithMegaMenu = () => {
         </div>
         <div className="hidden gap-2 lg:flex">
           <form className="max-w-md mx-auto flex border border-gray-300 rounded-md bg-gray-50 p-1">
-            <div className="relative bg-gray-50 ml-2 py-2 mr-4">
+            <div className="relative bg-gray-50 ml-2 py-2 mr-1">
               <input
                 type="search"
                 id="default-search"
-                className="block w-full text-sm bg-gray-50"
-                placeholder="What are you looking for?"
+                className="block w-full text-sm bg-gray-50 focus:outline-none min-w-[190px]"
+                placeholder="What are you looking for ?"
                 required
               />
             </div>
