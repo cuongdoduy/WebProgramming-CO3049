@@ -1,6 +1,9 @@
 import type { NextApiRequest, NextApiResponse } from 'next'
 
-const GetProductForYou = async (req: NextApiRequest, res: NextApiResponse<any>) => {
+const GetProductForYou = async (
+  req: NextApiRequest,
+  res: NextApiResponse<any>
+) => {
   if (req.method == 'GET') {
     const data = {
       message: 'Cart items',
@@ -11,7 +14,7 @@ const GetProductForYou = async (req: NextApiRequest, res: NextApiResponse<any>) 
           price: 200,
           quantity: 1,
           discount: 0,
-          image: 'http://localhost:3000/images/lcd-monitor.png',
+          image: `${process.env.NEXT_PUBLIC_REDIRECT_URI}/images/lcd-monitor.png`,
           rating: 2.5,
           reviews: 10,
         },
@@ -21,7 +24,7 @@ const GetProductForYou = async (req: NextApiRequest, res: NextApiResponse<any>) 
           price: 50,
           discount: 10,
           quantity: 1,
-          image: 'http://localhost:3000/images/gaming-mouse.png',
+          image: `${process.env.NEXT_PUBLIC_REDIRECT_URI}/images/gaming-mouse.png`,
           rating: 3.5,
           reviews: 20,
         },
@@ -31,7 +34,7 @@ const GetProductForYou = async (req: NextApiRequest, res: NextApiResponse<any>) 
           price: 100,
           discount: 20,
           quantity: 1,
-          image: 'http://localhost:3000/images/keyboard.png',
+          image: `${process.env.NEXT_PUBLIC_REDIRECT_URI}/images/keyboard.png`,
           rating: 4.5,
           reviews: 30,
         },
@@ -41,30 +44,30 @@ const GetProductForYou = async (req: NextApiRequest, res: NextApiResponse<any>) 
           price: 150,
           discount: 30,
           quantity: 1,
-          image: 'http://localhost:3000/images/ideapad.png',
+          image: `${process.env.NEXT_PUBLIC_REDIRECT_URI}/images/ideapad.png`,
           rating: 5,
           reviews: 40,
         },
         {
-            id: 5,
-            title: 'Wireless Keyboards',
-            price: 100,
-            discount: 20,
-            quantity: 1,
-            image: 'http://localhost:3000/images/keyboard.png',
-            rating: 4.5,
-            reviews: 30,
-          },
-          {
-            id: 6,
-            title: 'ASUS FHD Gaming Laptops',
-            price: 150,
-            discount: 30,
-            quantity: 1,
-            image: 'http://localhost:3000/images/ideapad.png',
-            rating: 5,
-            reviews: 40,
-          },
+          id: 5,
+          title: 'Wireless Keyboards',
+          price: 100,
+          discount: 20,
+          quantity: 1,
+          image: `${process.env.NEXT_PUBLIC_REDIRECT_URI}/images/keyboard.png`,
+          rating: 4.5,
+          reviews: 30,
+        },
+        {
+          id: 6,
+          title: 'ASUS FHD Gaming Laptops',
+          price: 150,
+          discount: 30,
+          quantity: 1,
+          image: `${process.env.NEXT_PUBLIC_REDIRECT_URI}/images/ideapad.png`,
+          rating: 5,
+          reviews: 40,
+        },
       ],
     }
 
