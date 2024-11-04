@@ -1,14 +1,16 @@
 import React, { useEffect, useState } from 'react'
 import Image from 'next/image'
-import Logo from 'public/logo.svg'
 import Link from 'next/link'
-import { Button } from '@material-tailwind/react'
+import { Button, Typography } from '@material-tailwind/react'
 import GoogleLogo from 'public/images/google.png'
 import Head from 'next/head'
 import { GetServerSidePropsContext, InferGetServerSidePropsType } from 'next'
 import { getCsrfToken } from 'next-auth/react'
 import { signIn } from 'next-auth/react'
-import { toast, ToastContainer } from 'react-toastify'
+import { toast } from 'react-toastify'
+import NavbarWithMegaMenu from '@/components/Navbar/Navbar'
+import Footer from '@/components/Footer/Footer'
+import SidebarImage from 'public/images/login_side_picture.png'
 
 const Login = ({
   csrfToken,
@@ -29,33 +31,28 @@ const Login = ({
   return (
     <>
       <MetaTags />
-      <main className="bg-[#F7F7F7] fixed top-0 bottom-0 left-0 right-0">
-        <div className="absolute top-[50%] -translate-y-[50%] left-[50%] -translate-x-[50%]">
-          <header className="flex items-center justify-start w-[70%] mx-auto flex-wrap">
-            <h4 className="text-h4 font-bold mr-4">Login to</h4>
-            <Link href="/">
-              <Image src={Logo} alt="logo" priority />
-            </Link>
-          </header>
-          <p className="text-body text-center">
-            We provide detailed information about suppliers and distributors
-          </p>
-          <div className="flex items-center justify-between p-[40px] bg-white rounded-lg max-w-[500px] my-8">
-            <div className="relative flex flex-col text-gray-700 bg-white shadow-none rounded-xl bg-clip-border">
-              <Button
-                variant="outlined"
-                size="lg"
-                className="mt-6 flex h-12 items-center justify-center gap-2 border-[#0000000F]"
-                fullWidth
-                onClick={async () =>
-                  await signIn('google', {
-                    callbackUrl: `${callBackURL}`,
-                  })
-                }>
-                <Image src={GoogleLogo} alt="google" className="h-6 w-6" />{' '}
-                Continue with google
-              </Button>
-              <hr className="my-6 border border-gray-200" />
+      <div>
+        <NavbarWithMegaMenu />
+        <main>
+          <div className="grid grid-cols-12 mt-[40px] mb-[80px]">
+            <div className="col-span-6">
+              <Image
+                src={SidebarImage}
+                alt="sidebar"
+                width={600}
+                height={400}
+              />
+            </div>
+            <div className="col-span-6">
+              <header className="flex items-center justify-start mx-auto flex-wrap">
+                <Typography as="h4" variant="h4" className="cursor-pointer">
+                  Login to
+                  <Link href="/"> Exclusive</Link>
+                </Typography>
+              </header>
+              <Typography as="p" variant="paragraph" className="py-2">
+                Enter your details below
+              </Typography>
               <form
                 name="Credentials"
                 className="max-w-screen-lg mt-4 mb-2 w-80 sm:w-96"
@@ -68,9 +65,9 @@ const Login = ({
                 />
                 <div className="flex flex-col gap-6 mb-1">
                   <div className="relative w-full min-w-[200px]">
-                    <label className="">
+                    <label>
                       <h6 className="block mb-1 font-sans text-base antialiased font-semibold leading-relaxed tracking-normal text-blue-gray-900">
-                        Username
+                        Username or Email
                       </h6>
                       <input
                         name="username"
@@ -95,28 +92,51 @@ const Login = ({
                     </label>
                   </div>
                 </div>
-
-                <button
-                  className="mt-6 block w-full select-none rounded-lg bg-primary py-3 px-6 text-center align-middle font-sans text-xs font-bold uppercase text-white shadow-md shadow-gray-900/10 transition-all hover:shadow-lg hover:shadow-gray-900/20 focus:opacity-[0.85] focus:shadow-none active:opacity-[0.85] active:shadow-none disabled:pointer-events-none disabled:opacity-50 disabled:shadow-none"
-                  type="submit">
-                  Log in
-                </button>
+                <div className="grid grid-cols-2 gap-6 items-center mt-6">
+                  <button
+                    className="block w-full select-none rounded-lg bg-[#DB4444] py-3 px-6 text-center align-middle font-sans text-xs font-bold uppercase text-white shadow-md shadow-gray-900/10 transition-all hover:shadow-lg hover:shadow-gray-900/20 focus:opacity-[0.85] focus:shadow-none active:opacity-[0.85] active:shadow-none disabled:pointer-events-none disabled:opacity-50 disabled:shadow-none"
+                    type="submit">
+                    Log in
+                  </button>
+                  <Typography
+                    as="p"
+                    variant="paragraph"
+                    className="text-center text-[#DB4444]">
+                    Forgot password?
+                  </Typography>
+                </div>
                 <p className="block mt-4 font-sans text-base antialiased font-normal leading-relaxed text-center text-gray-700">
                   Not registered? &nbsp;
                   <Link
                     href={`/auth/sign-up?callbackUrl=${encodeURIComponent(
                       callBackURL
                     )}`}
-                    className="text-gray-900 underline text-primary font-bold">
+                    className="underline text-[#DB4444] font-bold">
                     Create account
                   </Link>
                 </p>
               </form>
+              <hr className="my-6 border border-gray-200 max-w-screen-lg mt-4 mb-2 w-80 sm:w-96" />
+              <div className='max-w-screen-lg mt-4 mb-2 w-80 sm:w-96'>
+                <Button
+                  variant="outlined"
+                  size="lg"
+                  className="mt-6 flex h-12 items-center justify-center gap-2 border-[#0000000F]"
+                  fullWidth
+                  onClick={async () =>
+                    await signIn('google', {
+                      callbackUrl: `${callBackURL}`,
+                    })
+                  }>
+                  <Image src={GoogleLogo} alt="google" className="h-6 w-6" />{' '}
+                  Login with google
+                </Button>
+              </div>
             </div>
           </div>
-        </div>
-        <ToastContainer />
-      </main>
+        </main>
+        <Footer />
+      </div>
     </>
   )
 }

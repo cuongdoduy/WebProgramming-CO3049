@@ -1,34 +1,114 @@
 import Footer from '@/components/Footer/Footer'
 import NavbarWithMegaMenu from '@/components/Navbar/Navbar'
+import SecondaryButton from '@/components/SecondaryButton'
 import constants from '@/constant/schema-data'
-import { Breadcrumbs, Button } from '@material-tailwind/react'
+import ProductDescription from '@/page-sections/ProductDetailPage/ProductDescription'
+import ProductImageList from '@/page-sections/ProductDetailPage/ProductImageList'
+import ForYouList from '@/page-sections/WishlistPage/ForYouList'
+import { Breadcrumbs, Typography } from '@material-tailwind/react'
 import Head from 'next/head'
-import React, { Fragment } from 'react'
+import Link from 'next/link'
+import React, { Fragment, useEffect, useState } from 'react'
 
-const NotFound = () => {
+const ProductDetail = () => {
+  const [productData, setProductData] = useState<{
+    name: string
+    rate: number
+    reviews: number
+    status: 'In Stock' | 'Out of Stock'
+    price: number
+    discount: number
+    description: string
+    colors: Array<string>
+    sizes: Array<'XS' | 'S' | 'M' | 'L' | 'XL' | 'XXL'>
+    images: Array<string>
+  }>({
+    name: '',
+    rate: 0,
+    reviews: 0,
+    status: 'In Stock',
+    price: 0,
+    discount: 0,
+    description: '',
+    colors: [],
+    sizes: [],
+    images: [],
+  })
+
+  const [forYouItems, setForYouItems] = useState<
+    Array<{
+      id: number
+      title: string
+      price: number
+      image: string
+      discount: number
+      rating: number
+      reviews: number
+    }>
+  >([])
+
+  useEffect(() => {
+    const fetchData = async () => {
+      const product_data = fetch('/api/products/havic-hv-g92-gamepad')
+      const items_for_you = fetch('/api/products/for-you')
+      const [productDataResponse, forYouItemsResponse] = await Promise.all([
+        product_data,
+        items_for_you,
+      ])
+
+      const data = await productDataResponse.json()
+      setProductData(data.data)
+
+      const forYouItems = await forYouItemsResponse.json()
+      setForYouItems(forYouItems)
+    }
+    fetchData()
+  }, [])
+
+  console.log(productData)
+
   return (
     <Fragment>
       <MetaTags />
       <NavbarWithMegaMenu />
-      <div className="w-[80%] mx-auto my-12">
-        <Breadcrumbs className="bg-white">
-          <a href="#" className="opacity-60">
+      <main className="w-[80%] mx-auto my-12">
+        <Breadcrumbs className="bg-white p-0">
+          <Link href="/" className="opacity-60">
             Home
-          </a>
-          <a href="#">404 Error</a>
+          </Link>
+          <Link href="/products">Products</Link>
+          <Link
+            href="/products/havic-hv-g92-gamepad
+          ">
+            Havic HV G-92 Gamepad
+          </Link>
         </Breadcrumbs>
-        <div className="flex flex-col items-center justify-center my-[120px]">
-          <h1 className="text-6xl font-bold text-center text-black">
-            404 Not Found
-          </h1>
-          <p className="text-body mt-8">
-            Your visited page not found. You may go home page.
-          </p>
-          <Button className="bg-[#DB4444] rounded-md w-[240px] mt-8 py-4">
-            Back to home page
-          </Button>
+        <div className="mt-[60px] grid grid-cols-12 gap-x-6">
+          <div className="col-span-8">
+            <ProductImageList productImages={productData.images} />
+          </div>
+          <div className="col-span-4">
+            <ProductDescription data={productData} />
+          </div>
         </div>
-      </div>
+        <div className="my-12 mb-6 flex justify-between w-full items-center">
+          <div className="flex items-center justify-start gap-x-4">
+            <div className="w-[20px] h-[50px] bg-[#DB4444] rounded-md"></div>
+            <Typography
+              as="h5"
+              variant="h5"
+              className="py-1.5 text-[20px] font-normal">
+              Related Products
+            </Typography>
+          </div>
+          <SecondaryButton title="See All" />
+        </div>
+        <div className="mt-[60px]">
+          <div className="mt-[60px]">
+            <ForYouList data={forYouItems} />
+          </div>
+        </div>
+      </main>
       <Footer />
     </Fragment>
   )
@@ -116,4 +196,4 @@ const MetaTags = () => {
   )
 }
 
-export default NotFound
+export default ProductDetail
