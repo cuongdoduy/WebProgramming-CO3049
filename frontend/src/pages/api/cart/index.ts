@@ -10,14 +10,14 @@ const GetUserCart = async (req: NextApiRequest, res: NextApiResponse<any>) => {
           title: 'LCD Monitor',
           price: 200,
           quantity: 1,
-          image: 'http://localhost:3000/images/lcd-monitor.png',
+          image: `${process.env.NEXT_PUBLIC_REDIRECT_URI}/images/lcd-monitor.png`,
         },
         {
           id: 2,
           title: 'Gaming Mouse',
           price: 50,
           quantity: 1,
-          image: 'http://localhost:3000/images/gaming-mouse.png',
+          image: `${process.env.NEXT_PUBLIC_REDIRECT_URI}/images/gaming-mouse.png`,
         },
       ],
     }

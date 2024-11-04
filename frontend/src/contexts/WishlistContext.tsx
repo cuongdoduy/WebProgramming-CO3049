@@ -36,30 +36,30 @@ export const WishlistProvider: React.FC<WishlistProviderProps> = ({
       id: 1,
       title: 'Gucci duffle bag',
       price: 1160,
-      image: 'http://localhost:3000/images/gucci.png',
+      image: `${process.env.NEXT_PUBLIC_REDIRECT_URI}/images/gucci.png`,
       discount: 35,
     },
     {
       id: 2,
       title: 'RGB liquid CPU Cooler',
       price: 1960,
-      image: 'http://localhost:3000/images/rgb.png',
+      image: `${process.env.NEXT_PUBLIC_REDIRECT_URI}/images/rgb.png`,
       discount: 0,
     },
     {
       id: 3,
       title: 'GP11 Shooter USB Gamepad',
       price: 550,
-      image: 'http://localhost:3000/images/gamepad.png',
+      image: `${process.env.NEXT_PUBLIC_REDIRECT_URI}/images/gamepad.png`,
       discount: 0,
     },
     {
-        id: 4,
-        title: 'Quilted Satin Jacket',
-        price: 750,
-        image: 'http://localhost:3000/images/jacket.png',
-        discount: 0,
-    }
+      id: 4,
+      title: 'Quilted Satin Jacket',
+      price: 750,
+      image: `${process.env.NEXT_PUBLIC_REDIRECT_URI}/images/jacket.png`,
+      discount: 0,
+    },
   ])
 
   const removeWishlist = (id: number) => {

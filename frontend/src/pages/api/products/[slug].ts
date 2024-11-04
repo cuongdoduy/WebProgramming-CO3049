@@ -7,11 +7,13 @@ const GetProductForYou = async (
   if (req.method == 'GET') {
     // const { slug } = req.query
 
+    const url = process.env.NEXT_PUBLIC_REDIRECT_URI
+
     const product_images: Array<string> = [
-      'http://localhost:3000/images/Havic-HV-G92-Gamepad/image_1.png',
-      'http://localhost:3000/images/Havic-HV-G92-Gamepad/image_2.png',
-      'http://localhost:3000/images/Havic-HV-G92-Gamepad/image_3.png',
-      'http://localhost:3000/images/Havic-HV-G92-Gamepad/image_4.png',
+      `${url}/images/Havic-HV-G92-Gamepad/image_1.png`,
+      `${url}/images/Havic-HV-G92-Gamepad/image_2.png`,
+      `${url}/images/Havic-HV-G92-Gamepad/image_3.png`,
+      `${url}/images/Havic-HV-G92-Gamepad/image_4.png`,
     ]
 
     const product_data: {
