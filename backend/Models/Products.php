@@ -54,26 +54,52 @@ class ModelsProducts extends Model {
             echo "0 results";
         }
         
-        return $data;
+        return [
+            'status' => 200,
+            'details' => [
+                'data' => $data,
+                'pagination' => $page_data
+            ]
+        ];
     }
 
     public function createProduct() {
-        // $post = json_decode(file_get_contents('php://input'), true);
+        $body = json_decode(file_get_contents('php://input'), true);
+        $name = isset($body['name']) ? $body['name'] : '';
+        $price = isset($body['price']) ? $body['price'] : '';
+        $description = isset($body['description']) ? $body['description'] : '';
+        $status = isset($body['status']) ? $body['status'] : '';
+        $adminID = isset($body['adminID']) ? $body['adminID'] : '';
+        $image = isset($body['image']) ? $body['image'] : '';
+        
+        if ($name == '' || $price == '' || $description == '' || $status == '' || $adminID == '' || $image == '') {
+            return ['status' => 400,
+                'details' => [
+                    'message' => 'All fields are required'
+                ]
+            ];
+        }
 
-        $query = "INSERT INTO product (ProductName, Price, Description, cart_ID, Status, AdminID, image) VALUES ('New Product', 0, 'New Product', 0, 1, 0, 'default.jpg')";
-
-        if ($this->db->query($query) === TRUE) {
-            return ['message' => 'New record created successfully'];
-        } else {
-            return ['message' => 'Error: ' . $query . '<br>' . $this->db->error];
+        try {
+            $query = "INSERT INTO product (ProductName, Price, Description, Status, AdminID, image) VALUES ('$name', $price, '$description', '$status', $adminID, '$image')";
+            echo $query;
+            $this->db->query($query);
+            return ['status' => 200,
+                'details' => [
+                    'message' => 'Product created successfully'
+                ]
+            ];
+        } catch (Exception $e) {
+            return ['status' => 400,
+                'details' => [
+                    'message' => 'Error: ' . $e->getMessage()
+                ]
+            ];
         }
     }
 
-
     private function getCountProducts() {
         $query = $this->db->query("SELECT COUNT(*) as total FROM product");
-
-
         return ($query->num_rows > 0) ? (int) $query->fetch_assoc()['total'] : 0;
     }
 }

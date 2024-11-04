@@ -10,11 +10,11 @@ class Products  extends Controller {
         $model = $this->model('products');
 
         // Get all products
-        $data_list = $model->getAllProducts($param);
+        $response = $model->getAllProducts($param);
 
         // Send Response
-        $this->response->sendStatus(200);
-        $this->response->setContent($data_list);
+        $this->response->sendStatus($response['status']);
+        $this->response->setContent($response['details']);
     }
 
     public function create() {
@@ -22,11 +22,11 @@ class Products  extends Controller {
         $model = $this->model('products');
 
         // Create product
-        $data_list = $model->createProduct();
+        $response = $model->createProduct();
 
         // Send Response
-        $this->response->sendStatus(200);
-        $this->response->setContent($data_list);
+        $this->response->sendStatus($response['status']);
+        $this->response->setContent($response['details']);
     }
 
     public function update($param) {
