@@ -97,7 +97,7 @@ const MetaTags = () => {
         name="keywords"
         content="electronics, fashion, gadgets, clothing, accessories"
       />
-      <link rel="canonical" href="https://exclusive.com.vn" />
+      <link rel="canonical" href="https://web-programming-co-3049.vercel.app" />
       <meta name="robots" content="index, follow" />
       <meta name="googlebot" content="index, follow" />
       <meta name="viewport" content="width=device-width, initial-scale=1.0" />
@@ -111,7 +111,7 @@ const MetaTags = () => {
         content="The best place to buy your favorite products. We offer a wide range of products from electronics to fashion."
       />
       <meta property="og:sitename" content="Exclusive" />
-      <meta property="og:url" content="https://exclusive.com.vn" />
+      <meta property="og:url" content="https://web-programming-co-3049.vercel.app" />
       <meta property="og:type" content="website" />
       <meta property="og:locale" content="en_US" />
       <meta property="og:updated_time" content="2024-10-22T02:08:26+00:00" />

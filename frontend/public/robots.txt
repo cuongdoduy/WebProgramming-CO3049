@@ -1,0 +1,3 @@
+User-agent: *
+Disallow:
+Sitemap: https://web-programming-co-3049.vercel.app/sitemap.xml
