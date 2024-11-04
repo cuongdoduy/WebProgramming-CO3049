@@ -5,7 +5,7 @@ const GetProductForYou = async (
   res: NextApiResponse<any>
 ) => {
   if (req.method == 'GET') {
-    const { slug } = req.query
+    // const { slug } = req.query
 
     const product_images: Array<string> = [
       'http://localhost:3000/images/Havic-HV-G92-Gamepad/image_1.png',
