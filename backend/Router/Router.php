@@ -17,5 +17,9 @@ $router->get('/', function() {
 ////////////////////////////////////////////////////////////////////////////////////
 
 // example
-// Get all products
-$router->get('/all', 'Products@getAllProducts');
+// products router
+$router->get('/products', 'Products@products');
+$router->get('/products/:page', 'Products@products');
+$router->post('/products', 'Products@create');
+$router->put('/products/:id', 'Products@update');
+$router->delete('/products/:id', 'Products@delete');

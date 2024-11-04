@@ -29,5 +29,8 @@ class Model {
             DATABASE['Name'],
             DATABASE['Port']    
         );
+        // Pagination
+        $this->pagination = $GLOBALS['pagination'];
     }
+    
 }

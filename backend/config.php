@@ -21,3 +21,6 @@ define('DATABASE', [
 
 // DB_PREFIX
 define('DB_PREFIX', '');
+
+// Pagination
+define('PAGE_LIMIT', 5);
