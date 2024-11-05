@@ -1,0 +1,828 @@
+From 0033a3778ad1bbdaeb04fbda1f231d19deb91309 Mon Sep 17 00:00:00 2001
+From: Long Vo <longvo1903@gmail.com>
+Date: Tue, 5 Nov 2024 14:33:24 +0700
+Subject: [PATCH] products and customer/ CRUD, search products by name
+
+---
+ backend/Controllers/Customers.php |  71 ++++++++
+ backend/Controllers/Products.php  |  58 +++++--
+ backend/Models/Customers.php      | 267 ++++++++++++++++++++++++++++++
+ backend/Models/Products.php       | 222 +++++++++++++++++++++++++
+ backend/Router/Router.php         |  43 ++++-
+ backend/SQL/shop.sql              |  49 +++++-
+ backend/System/Router/Router.php  |   2 -
+ 7 files changed, 694 insertions(+), 18 deletions(-)
+ create mode 100644 backend/Controllers/Customers.php
+ create mode 100644 backend/Models/Customers.php
+
+diff --git a/backend/Controllers/Customers.php b/backend/Controllers/Customers.php
+new file mode 100644
+index 0000000..5ba833d
+--- /dev/null
++++ b/backend/Controllers/Customers.php
+@@ -0,0 +1,71 @@
++<?php 
++
++use MVC\Controller;
++require './System/MVC/Controller.php';
++
++class Customers  extends Controller {
++
++    public function customers($param) {
++        // Connect to database
++        $model = $this->model('customers');
++
++        // Get customer(s)
++        $response = null;
++        if(isset($param['id'])) {
++            $response = $model->getCustomer($param);
++        } else {
++            $response = $model->getAllCustomers($param);
++        }
++        // Send Response
++        $this->response->sendStatus($response['status']);
++        $this->response->setContent($response['details']);
++    }
++
++    public function create() {
++        // Connect to database
++        $model = $this->model('customers');
++
++        // Create product
++        $response = $model->createCustomer();
++
++        // Send Response
++        $this->response->sendStatus($response['status']);
++        $this->response->setContent($response['details']);
++    }
++
++    public function update($param) {
++        // Connect to database
++        $model = $this->model('customers');
++
++        // Create product
++        $response = $model->updateCustomer($param);
++
++        // Update Response
++        $this->response->sendStatus($response['status']);
++        $this->response->setContent($response['details']);
++    }
++
++    public function delete($param) {
++        // Connect to database
++        $model = $this->model('customers');
++
++        // Delete product
++        $response = $model->deleteCustomer($param);
++
++        // Send Response
++        $this->response->sendStatus($response['status']);
++        $this->response->setContent($response['details']);
++    }
++
++    public function deleteMultiple() {
++        // Connect to database
++        $model = $this->model('customers');
++
++        // Delete product
++        $response = $model->deleteMultipleCustomers();
++
++        // Send Response
++        $this->response->sendStatus($response['status']);
++        $this->response->setContent($response['details']);
++    }
++}
+diff --git a/backend/Controllers/Products.php b/backend/Controllers/Products.php
+index 65520d8..a91f6c5 100644
+--- a/backend/Controllers/Products.php
++++ b/backend/Controllers/Products.php
+@@ -9,9 +9,13 @@ class Products  extends Controller {
+         // Connect to database
+         $model = $this->model('products');
+ 
+-        // Get all products
+-        $response = $model->getAllProducts($param);
+-
++        // Get product(s)
++        $response = null;
++        if(isset($param['id'])) {
++            $response = $model->getProduct($param);
++        } else {
++            $response = $model->getAllProducts($param);
++        }
+         // Send Response
+         $this->response->sendStatus($response['status']);
+         $this->response->setContent($response['details']);
+@@ -33,12 +37,12 @@ class Products  extends Controller {
+         // Connect to database
+         $model = $this->model('products');
+ 
+-        // Update product
+-        $data_list = $model->updateProduct($param);
++        // Create product
++        $response = $model->updateProduct($param);
+ 
+-        // Send Response
+-        $this->response->sendStatus(200);
+-        $this->response->setContent($data_list);
++        // Update Response
++        $this->response->sendStatus($response['status']);
++        $this->response->setContent($response['details']);
+     }
+ 
+     public function delete($param) {
+@@ -46,10 +50,42 @@ class Products  extends Controller {
+         $model = $this->model('products');
+ 
+         // Delete product
+-        $data_list = $model->deleteProduct($param);
++        $response = $model->deleteProduct($param);
++
++        // Send Response
++        $this->response->sendStatus($response['status']);
++        $this->response->setContent($response['details']);
++    }
++
++    public function deleteMultiple() {
++        // Connect to database
++        $model = $this->model('products');
++
++        // Delete product
++        $response = $model->deleteMultipleProducts();
+ 
+         // Send Response
+-        $this->response->sendStatus(200);
+-        $this->response->setContent($data_list);
++        $this->response->sendStatus($response['status']);
++        $this->response->setContent(c);
++    }
++
++    public function searchByName($param) {
++        if (isset($param['name']) && $this->validSearchName($param['name'])) {
++            $model = $this->model('products');
++            $response = $model->searchByName($param);
++            $this->response->sendStatus($response['status']);
++            $this->response->setContent($response['details']);
++        } else {
++            $this->response->sendStatus(200);
++            $this->response->setContent([
++                'message' => 'Invalid search name'
++            ]);
++        }
++    }
++
++    private function validSearchName($name) {
++        // filter special characters
++        $name = preg_replace('/[^a-zA-Z0-9\s]/', '', $name);
++        return !empty($name) && !is_numeric($name) && strlen((string) $name) > 0;
+     }
+ }
+diff --git a/backend/Models/Customers.php b/backend/Models/Customers.php
+new file mode 100644
+index 0000000..beab4dd
+--- /dev/null
++++ b/backend/Models/Customers.php
+@@ -0,0 +1,267 @@
++<?php 
++
++require './System/MVC/Model.php';
++use MVC\Model;
++
++
++
++////////////////////////////////////////////////////////////////////////////////////
++//                                                                                //
++//    Naming Convention: Model Class must follow the format: Models{Modelname}    //
++//                                                                                //
++////////////////////////////////////////////////////////////////////////////////////
++
++class ModelsCustomers extends Model {
++
++    public function getAllCustomers($param) {
++        // sql statement
++        $query = "SELECT * FROM customer";
++
++        // pagination
++        $this->pagination->total = $this->getCountCustomers();
++
++        if (isset($param['page']) && is_numeric($param['page'])) {
++            $this->pagination->page = (int) $param['page'];
++        } else {
++            $this->pagination->page = 1;
++        }
++
++        // render page data
++        $page_data = $this->pagination->render();  
++        $offset = ($this->pagination->page - 1) * $page_data['limit']; 
++
++        $query .= " ORDER BY UserID ASC LIMIT ". $page_data['limit'] . " OFFSET $offset" ;
++
++        // exec query
++        $result = $this->db->query($query);
++        $data = array();
++
++        if ($result->num_rows > 0) {
++            // output data of each row
++            while($row = $result->fetch_assoc()) { 
++                array_push($data, [
++                    'id' => $row["UserID"],
++                    'name' => $row["Name"],
++                    'role' => $row["Role"],
++                    'address' => $row["Address"],
++                    'email' => $row["Email"],
++                    'password' => $row["Password"],
++                    'adminID' => $row["AdminID"],
++                ]);
++            }
++          } else {
++            echo "0 results";
++        }
++        
++        return [
++            'status' => 200,
++            'details' => [
++                'data' => $data,
++                'pagination' => $page_data
++            ]
++        ];
++    }
++
++    public function getCustomer($param) {
++        $id = isset($param['id']) ? $param['id'] : '';
++        if ($id == '') {
++            return ['status' => 400,
++                'details' => [
++                    'message' => 'Customer ID is required'
++                ]
++            ];
++        }
++
++        $query = "SELECT * FROM customer WHERE UserID = $id";
++        $result = $this->db->query($query);
++        $data = array();
++
++        if ($result->num_rows > 0) {
++            // output data of each row
++            while($row = $result->fetch_assoc()) { 
++                array_push($data, [
++                    'id' => $row["UserID"],
++                    'name' => $row["Name"],
++                    'role' => $row["Role"],
++                    'address' => $row["Address"],
++                    'email' => $row["Email"],
++                    'password' => $row["Password"],
++                    'adminID' => $row["AdminID"],
++                ]);
++            }
++          } else {
++            return ['status' => 400,
++                'details' => [
++                    'message' => 'Customer not found'
++                ]
++            ];
++        }
++        
++        return [
++            'status' => 200,
++            'details' => [
++                'data' => $data
++            ]
++        ];
++    }
++
++    public function createCustomer() {
++        $body = json_decode(file_get_contents('php://input'), true);
++        
++        $name = isset($body['name']) ? $body['name'] : '';
++        $role = isset($body['role']) ? $body['role'] : '';
++        $address = isset($body['address']) ? $body['address'] : '';
++        $email = isset($body['email']) ? $body['email'] : '';
++        $password = isset($body['password']) ? $body['password'] : '';
++        $adminID = isset($body['adminID']) ? $body['adminID'] : '';
++        
++        if ($name == '' || $role == '' || $address == '' || $email == '' || $password == '' || $adminID == '') {
++            return ['status' => 400,
++                'details' => [
++                    'message' => 'All fields are required'
++                ]
++            ];
++        }
++
++        try {
++            $query = "INSERT INTO customer (Name, Role, Address, Email, Password, AdminID) VALUES ('$name', '$role', '$address', '$email', '$password', $adminID)";
++            $this->db->query($query);
++            return ['status' => 200,
++                'details' => [
++                    'message' => 'Customer created successfully'
++                ]
++            ];
++        } catch (Exception $e) {
++            return ['status' => 400,
++                'details' => [
++                    'message' => 'Error: ' . $e->getMessage()
++                ]
++            ];
++        }
++    }
++
++    public function updateCustomer($param) {
++        $id = isset($param['id']) ? $param['id'] : '';
++        if ($id == '') {
++            return ['status' => 400,
++                'details' => [
++                    'message' => 'Customer ID is required'
++                ]
++            ];
++        }
++
++        $body = json_decode(file_get_contents('php://input'), true);
++        $name = isset($body['name']) ? $body['name'] : '';
++        $role = isset($body['role']) ? $body['role'] : '';
++        $address = isset($body['address']) ? $body['address'] : '';
++        $email = isset($body['email']) ? $body['email'] : '';
++        $password = isset($body['password']) ? $body['password'] : '';
++        $adminID = isset($body['adminID']) ? $body['adminID'] : '';
++        
++        if ($name == '' && $role == '' && $address == '' && $email == '' && $password == '' && $adminID == '') {
++            return ['status' => 400,
++                'details' => [
++                    'message' => 'At least one field is required'
++                ]
++            ];
++        }
++
++        if (!$this->checkCustomer($id)) {
++            return ['status' => 400,
++                'details' => [
++                    'message' => 'Customer not found'
++                ]
++            ];
++        }
++
++        try {
++            // create query for the case not all field is updated
++            $query = "UPDATE customer SET ";
++            $query .= ($name != '') ? "Name = '$name', " : "";
++            $query .= ($role != '') ? "Role = '$role', " : "";
++            $query .= ($address != '') ? "Address = '$address', " : "";
++            $query .= ($email != '') ? "Email = '$email', " : "";
++            $query .= ($password != '') ? "Password = '$password', " : "";
++            $query .= ($adminID != '') ? "AdminID = $adminID, " : "";
++            $query .= "WHERE UserID = $id";
++            $this->db->query($query);
++            return ['status' => 200,
++                'details' => [
++                    'message' => 'Customer updated successfully'
++                ]
++            ];
++        } catch (Exception $e) {
++            return ['status' => 400,
++                'details' => [
++                    'message' => 'Error: ' . $e->getMessage()
++                ]
++            ];
++        }
++    }
++
++    public function deleteCustomer($param) {
++        $id = isset($param['id']) ? $param['id'] : '';
++        if ($id == '') {
++            return ['status' => 400,
++                'details' => [
++                    'message' => 'Customer ID is required'
++                ]
++            ];
++        }
++
++        if (!$this->checkCustomer($id)) {
++            return ['status' => 400,
++                'details' => [
++                    'message' => 'Customer not found'
++                ]
++            ];
++        }
++
++        try {
++            $query = "DELETE FROM customer WHERE UserID = $id";
++            $this->db->query($query);
++            return ['status' => 200,
++                'details' => [
++                    'message' => 'Customer deleted successfully'
++                ]
++            ];
++        } catch (Exception $e) {
++            return ['status' => 400,
++                'details' => [
++                    'message' => 'Error: ' . $e->getMessage()
++                ]
++            ];
++        }
++    }
++
++    public function deleteMultipleCustomers() {
++      $body = json_decode(file_get_contents('php://input'), true);
++        $ids = isset($body['ids']) ? $body['ids'] : '';
++        if ($ids == '' || $ids == []) {
++            return ['status' => 400,
++                'details' => [
++                    'error' => 'Customer IDs are required',
++                    'message' => 'ids fields must be specified in the request body'
++                ]
++            ];
++        }
++
++        $query = "DELETE FROM customer WHERE UserID IN (". implode(',', $ids) .")";
++        $this->db->query($query);
++        return ['status' => 200,
++            'details' => [
++                'message' => 'Customers deleted successfully'
++            ]
++        ];
++    }
++
++    private function checkCustomer($id) {
++        $query = $this->db->query("SELECT * FROM customer WHERE UserID = $id");
++        return ($query->num_rows > 0);
++    }
++
++    private function getCountCustomers() {
++        $query = $this->db->query("SELECT COUNT(*) as total FROM customer");
++        return ($query->num_rows > 0) ? (int) $query->fetch_assoc()['total'] : 0;
++    }
++}
+diff --git a/backend/Models/Products.php b/backend/Models/Products.php
+index 372d9bc..e703497 100644
+--- a/backend/Models/Products.php
++++ b/backend/Models/Products.php
+@@ -63,6 +63,107 @@ class ModelsProducts extends Model {
+         ];
+     }
+ 
++    public function searchByName($param) {
++        $query = "SELECT * FROM product WHERE ProductName LIKE '%". $param['name'] ."%'";
++        
++        // total data find
++        $total = $this->db->query("SELECT COUNT(*) as total from product WHERE ProductName LIKE '%". $param['name'] ."%'");
++    
++        // pagination
++        $this->pagination->total = ($total->num_rows > 0) ? (int) $total->fetch_assoc()['total'] : 0;
++
++        // check valid page
++        if (isset($param['page']) && is_numeric($param['page'])) {
++            $this->pagination->page = (int) $param['page'];
++        } else {
++            $this->pagination->page = 1;
++        }
++
++        // render page data
++        $page_data = $this->pagination->render();  
++        $offset = ($this->pagination->page - 1) * $page_data['limit'];
++
++        // read products with limit of page
++        $query .= " ORDER BY ProductID ASC LIMIT " . $offset . ", " . $page_data['limit'];
++        // exec query
++        $result = $this->db->query($query);
++        $data = array();
++
++        if ($result->num_rows > 0) {
++            // output data of each row
++            while($row = $result->fetch_assoc()) { 
++                array_push($data, [
++                    'id' => $row["ProductID"],
++                    'name' => $row["ProductName"],
++                    'price' => $row["Price"],
++                    'description' => $row["Description"],
++                    'cartID' => $row["cart_ID"],
++                    'status' => $row["Status"],
++                    'adminID' => $row["AdminID"],
++                    'img' => $row["image"],
++                ]);
++            }
++          } else {
++            return ['status' => 200,
++                'details' => [
++                    'message' => 'Found 0 product'
++                ]
++            ];
++        }
++
++        return [
++            'status' => 200,
++            'details' => [
++                'data' => $data,
++                'pagination' => $page_data
++            ]
++        ];
++    }
++
++    public function getProduct($param) {
++        $id = isset($param['id']) ? $param['id'] : '';
++        if ($id == '' || !is_numeric($id)) {
++            return ['status' => 400,
++                'details' => [
++                    'message' => 'Product ID is required or invalid'
++                ]
++            ];
++        }
++
++        $query = "SELECT * FROM product WHERE ProductID = $id";
++        $result = $this->db->query($query);
++        $data = array();
++
++        if ($result->num_rows > 0) {
++            // output data of each row
++            while($row = $result->fetch_assoc()) { 
++                array_push($data, [
++                    'id' => $row["ProductID"],
++                    'name' => $row["ProductName"],
++                    'price' => $row["Price"],
++                    'description' => $row["Description"],
++                    'cartID' => $row["cart_ID"],
++                    'status' => $row["Status"],
++                    'adminID' => $row["AdminID"],
++                    'img' => $row["image"],
++                ]);
++            }
++          } else {
++            return ['status' => 400,
++                'details' => [
++                    'message' => 'Product not found'
++                ]
++            ];
++        }
++        
++        return [
++            'status' => 200,
++            'details' => [
++                'data' => $data
++            ]
++        ];
++    }
++
+     public function createProduct() {
+         $body = json_decode(file_get_contents('php://input'), true);
+         $name = isset($body['name']) ? $body['name'] : '';
+@@ -98,6 +199,127 @@ class ModelsProducts extends Model {
+         }
+     }
+ 
++    public function updateProduct($param) {
++        $id = isset($param['id']) ? $param['id'] : '';
++        if ($id == '') {
++            return ['status' => 400,
++                'details' => [
++                    'message' => 'Product ID is required'
++                ]
++            ];
++        }
++
++        $body = json_decode(file_get_contents('php://input'), true);
++        $name = isset($body['name']) ? $body['name'] : '';
++        $price = isset($body['price']) ? $body['price'] : '';
++        $description = isset($body['description']) ? $body['description'] : '';
++        $status = isset($body['status']) ? $body['status'] : '';
++        $adminID = isset($body['adminID']) ? $body['adminID'] : '';
++        $image = isset($body['image']) ? $body['image'] : '';
++        
++        if ($name == '' && $price == '' && $description == '' && $status == '' && $adminID == '' && $image == '') {
++            return ['status' => 400,
++                'details' => [
++                    'message' => 'Please provide at least one field to update'
++                ]
++            ];
++        }
++
++        if (!$this->checkProduct($id)) {
++            return ['status' => 400,
++                'details' => [
++                    'message' => 'Product not found'
++                ]
++            ];
++        }
++
++        try {
++            // create query for the case where not all field is updated
++            $query = "UPDATE product SET ";
++            $query .= ($name != '') ? "ProductName = '$name', " : "";
++            $query .= ($price != '') ? "Price = $price, " : "";
++            $query .= ($description != '') ? "Description = '$description', " : "";
++            $query .= ($status != '') ? "Status = '$status', " : "";
++            $query .= ($adminID != '') ? "AdminID = $adminID, " : "";
++            $query .= ($image != '') ? "image = '$image' " : "";
++            $query .= "WHERE ProductID = $id";
++
++            $this->db->query($query);
++            return ['status' => 200,
++                'details' => [
++                    'message' => 'Product updated successfully'
++                ]
++            ];
++        } catch (Exception $e) {
++            return ['status' => 400,
++                'details' => [
++                    'message' => 'Error: ' . $e->getMessage()
++                ]
++            ];
++        }
++    }
++
++    public function deleteProduct($param) {
++        $id = isset($param['id']) ? $param['id'] : '';
++        if ($id == '') {
++            return ['status' => 400,
++                'details' => [
++                    'message' => 'Product ID is required'
++                ]
++            ];
++        }
++
++        if (!$this->checkProduct($id)) {
++            return ['status' => 400,
++                'details' => [
++                    'message' => 'Product not found'
++                ]
++            ];
++        }
++
++        try {
++            $query = "DELETE FROM product WHERE ProductID = $id";
++            $this->db->query($query);
++            return ['status' => 200,
++                'details' => [
++                    'message' => 'Product deleted successfully'
++                ]
++            ];
++        } catch (Exception $e) {
++            return ['status' => 400,
++                'details' => [
++                    'message' => 'Error: ' . $e->getMessage()
++                ]
++            ];
++        }
++    }
++
++    public function deleteMultipleProducts() {
++        $body = json_decode(file_get_contents('php://input'), true);
++        $ids = isset($body['ids']) ? $body['ids'] : '';
++        if ($ids == '' || $ids == []) {
++            return ['status' => 400,
++                'details' => [
++                    'error' => 'Product IDs are required',
++                    'message' => 'ids fields must be specified in the request body'
++                ]
++            ];
++        }
++
++        $query = "DELETE FROM product WHERE ProductID IN (". implode(',', $ids) .")";
++        $this->db->query($query);
++        return ['status' => 200,
++            'details' => [
++                'message' => 'Products deleted successfully'
++            ]
++        ];
++    }
++
++    private function checkProduct($id) {
++        $query = $this->db->query("SELECT * FROM product WHERE ProductID = $id");
++        return ($query->num_rows > 0);
++    }
++
+     private function getCountProducts() {
+         $query = $this->db->query("SELECT COUNT(*) as total FROM product");
+         return ($query->num_rows > 0) ? (int) $query->fetch_assoc()['total'] : 0;
+diff --git a/backend/Router/Router.php b/backend/Router/Router.php
+index af26f17..c508e6a 100644
+--- a/backend/Router/Router.php
++++ b/backend/Router/Router.php
+@@ -10,16 +10,51 @@ $router->get('/', function() {
+     </div>';
+ });
+ 
++$router->get('/product', function() {
++    $GLOBALS['response']->sendStatus(400);
++    $GLOBALS['response']->setContent([
++        'message' => 'Product ID is required'
++    ]);
++});
++
++$router->put('/product', function() {
++    $GLOBALS['response']->sendStatus(400);
++    $GLOBALS['response']->setContent([
++        'message' => 'Product ID is required'
++    ]);
++});
++
++$router->delete('/product', function() {
++    $GLOBALS['response']->sendStatus(400);
++    $GLOBALS['response']->setContent([
++        'message' => 'Product ID is required'
++    ]);
++});
++
+ ////////////////////////////////////////////////////////////////////////////////////
+ //                                                                                //
+ //     Pattern: $router->get('/path:{param}', 'Controller@ControllerMethod');     //
+ //                                                                                //
+ ////////////////////////////////////////////////////////////////////////////////////
+ 
+-// example
+ // products router
+ $router->get('/products', 'Products@products');
+ $router->get('/products/:page', 'Products@products');
+-$router->post('/products', 'Products@create');
+-$router->put('/products/:id', 'Products@update');
+-$router->delete('/products/:id', 'Products@delete');
++$router->get('/product/:id', 'Products@products');
++$router->post('/product', 'Products@create');
++$router->put('/product/:id', 'Products@update');
++$router->delete('/product/:id', 'Products@delete');
++$router->delete('/products', 'Products@deleteMultiple');
++//search product
++$router->get('/products/name/:name', 'Products@searchByName');
++$router->get('/products/name/:name/:page', 'Products@searchByName');
++
++
++// customers router
++$router->get('/customers', 'Customers@customers');
++$router->get('/customer/:id', 'Customers@customers');
++$router->get('/customers/:page', 'Customers@customers');
++$router->post('/customer', 'Customers@create');
++$router->put('/customer/:id', 'Customers@update');
++$router->delete('/customer/:id', 'Customers@delete');
++$router->delete('/customers', 'Customers@deleteMultiple');
+diff --git a/backend/SQL/shop.sql b/backend/SQL/shop.sql
+index da1136a..c27e045 100644
+--- a/backend/SQL/shop.sql
++++ b/backend/SQL/shop.sql
+@@ -152,4 +152,51 @@ VALUES
+ ('Keychron K10', 'Tenkeyless mechanical keyboard', 99.99, 'In Stock', 'keychronK10.jpg', 1),
+ ('ASUS ROG Strix XG32UQ', 'High-refresh-rate gaming monitor', 1299.99, 'In Stock', 'strixXG32UQ.jpg', 1),
+ ('Samsung Odyssey Neo G8', 'Mini-LED gaming monitor with high refresh rate', 999.99, 'In Stock', 'odysseyNeoG8.jpg', 1),
+-('BenQ EW3280U', '4K monitor for content creation', 799.99, 'In Stock', 'ew3280U.jpg', 1);
+\ No newline at end of file
++('BenQ EW3280U', '4K monitor for content creation', 799.99, 'In Stock', 'ew3280U.jpg', 1);
++
++INSERT INTO Customer (Name, Role, Address, Email, Password, AdminID)
++VALUES
++('Alice Johnson', 'Customer', '123 Main St', 'alice@example.com', 'password123', 1),
++('Bob Smith', 'Customer', '456 Elm St', 'bob@example.com', 'password456', 1),
++('Charlie Brown', 'Customer', '789 Oak St', 'charlie@example.com', 'password789', 1),
++('David Lee', 'Customer', '101 Pine St', 'david@example.com', 'password101', 1),
++('Emily Wilson', 'Customer', '202 Cedar St', 'emily@example.com', 'password202', 1),
++('Frank Green', 'Customer', '303 Maple St', 'frank@example.com', 'password303', 1),
++('Grace Miller', 'Customer', '404 Birch St', 'grace@example.com', 'password404', 1),
++('Henry Davis', 'Customer', '505 Walnut St', 'henry@example.com', 'password505', 1),
++('Isabella Clark', 'Customer', '606 Willow St', 'isabella@example.com', 'password606', 1),
++('Jack White', 'Customer', '707 Spruce St', 'jack@example.com', 'password707', 1),
++('Karen Black', 'Customer', '808 Ash St', 'karen@example.com', 'password808', 1),
++('Larry Brown', 'Customer', '909 Fir St', 'larry@example.com', 'password909', 1),
++('Michelle Green', 'Customer', '1010 Pine St', 'michelle@example.com', 'password1010', 1),
++('Nathan Davis', 'Customer', '1111 Cedar St', 'nathan@example.com', 'password1111', 1),
++('Olivia Clark', 'Customer', '1212 Maple St', 'olivia@example.com', 'password1212', 1),
++('Peter White', 'Customer', '1313 Birch St', 'peter@example.com', 'password1313', 1),
++('Quinn Black', 'Customer', '1414 Walnut St', 'quinn@example.com', 'password1414', 1),
++('Riley Brown', 'Customer', '1515 Willow St', 'riley@example.com', 'password1515', 1),
++('Sophia Green', 'Customer', '1616 Spruce St', 'sophia@example.com', 'password1616', 1),
++('Thomas Davis', 'Customer', '1717 Ash St', 'thomas@example.com', 'password1717', 1),
++('Uma Clark', 'Customer', '1818 Fir St', 'uma@example.com', 'password1818', 1),
++('Victor White', 'Customer', '1919 Pine St', 'victor@example.com', 'password1919', 1),
++('Wendy Black', 'Customer', '2020 Cedar St', 'wendy@example.com', 'password2020', 1),
++('Xavier Brown', 'Customer', '2121 Maple St', 'xavier@example.com', 'password2121', 1),
++('Yolanda Green', 'Customer', '2222 Birch St', 'yolanda@example.com', 'password2222', 1),
++('Zachary Davis', 'Customer', '2323 Walnut St', 'zachary@example.com', 'password2323', 1),
++('Abby Clark', 'Customer', '2424 Willow St', 'abby@example.com', 'password2424', 1),
++('Ben White', 'Customer', '2525 Spruce St', 'ben@example.com', 'password2525', 1),
++('Chloe Black', 'Customer', '2626 Ash St', 'chloe@example.com', 'password2626', 1),
++('Daniel Brown', 'Customer', '2727 Fir St', 'daniel@example.com', 'password2727', 1),
++('Ella Green', 'Customer', '2828 Pine St', 'ella@example.com', 'password2828', 1),
++('Finn Davis', 'Customer', '2929 Cedar St', 'finn@example.com', 'password2929', 1),
++('Georgia Clark', 'Customer', '3030 Maple St', 'georgia@example.com', 'password3030', 1),
++('Harry White', 'Customer', '3131 Birch St', 'harry@example.com', 'password3131', 1),
++('Isabella Black', 'Customer', '3232 Walnut St', 'isabella@example.com', 'password3232', 1),
++('Jack Brown', 'Customer', '3333 Willow St', 'jack@example.com', 'password3333', 1),
++('Karen Green', 'Customer', '3434 Spruce St', 'karen@example.com', 'password3434', 1),
++('Liam Davis', 'Customer', '3535 Ash St', 'liam@example.com', 'password3535', 1),
++('Mia Clark', 'Customer', '3636 Fir St', 'mia@example.com', 'password3636', 1),
++('Noah White', 'Customer', '3737 Pine St', 'noah@example.com', 'password3737', 1),
++('Olivia Black', 'Customer', '3838 Cedar St', 'olivia@example.com', 'password3838', 1),
++('Penelope Brown', 'Customer', '3939 Maple St', 'penelope@example.com', 'password3939', 1),
++('Quinn Green', 'Customer', '4040 Birch St', 'quinn@example.com', 'password4040', 1),
++('Riley Davis', 'Customer', '4141 Walnut St', 'riley@example.com', 'password4141', 1);
+\ No newline at end of file
+diff --git a/backend/System/Router/Router.php b/backend/System/Router/Router.php
+index 2363292..a130ed7 100644
+--- a/backend/System/Router/Router.php
++++ b/backend/System/Router/Router.php
+@@ -122,9 +122,7 @@ class Router {
+      */
+     public function dispatch($url, $pattern) {
+         preg_match_all('@:([\w]+)@', $pattern, $params, PREG_PATTERN_ORDER);
+-
+         $patternAsRegex = preg_replace_callback('@:([\w]+)@', [$this, 'convertPatternToRegex'], $pattern);
+-
+         if (substr($pattern, -1) === '/' ) {
+ 	        $patternAsRegex = $patternAsRegex . '?';
+ 	    }
+-- 
+2.42.0.windows.2
+
