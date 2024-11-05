@@ -183,7 +183,6 @@ class ModelsProducts extends Model {
 
         try {
             $query = "INSERT INTO product (ProductName, Price, Description, Status, AdminID, image) VALUES ('$name', $price, '$description', '$status', $adminID, '$image')";
-            echo $query;
             $this->db->query($query);
             return ['status' => 200,
                 'details' => [

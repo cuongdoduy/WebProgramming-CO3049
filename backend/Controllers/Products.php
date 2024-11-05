@@ -66,7 +66,7 @@ class Products  extends Controller {
 
         // Send Response
         $this->response->sendStatus($response['status']);
-        $this->response->setContent(c);
+        $this->response->setContent($response['details']);
     }
 
     public function searchByName($param) {
