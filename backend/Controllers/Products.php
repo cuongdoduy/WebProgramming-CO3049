@@ -9,9 +9,13 @@ class Products  extends Controller {
         // Connect to database
         $model = $this->model('products');
 
-        // Get all products
-        $response = $model->getAllProducts($param);
-
+        // Get product(s)
+        $response = null;
+        if(isset($param['id'])) {
+            $response = $model->getProduct($param);
+        } else {
+            $response = $model->getAllProducts($param);
+        }
         // Send Response
         $this->response->sendStatus($response['status']);
         $this->response->setContent($response['details']);
@@ -33,12 +37,12 @@ class Products  extends Controller {
         // Connect to database
         $model = $this->model('products');
 
-        // Update product
-        $data_list = $model->updateProduct($param);
+        // Create product
+        $response = $model->updateProduct($param);
 
-        // Send Response
-        $this->response->sendStatus(200);
-        $this->response->setContent($data_list);
+        // Update Response
+        $this->response->sendStatus($response['status']);
+        $this->response->setContent($response['details']);
     }
 
     public function delete($param) {
@@ -46,10 +50,42 @@ class Products  extends Controller {
         $model = $this->model('products');
 
         // Delete product
-        $data_list = $model->deleteProduct($param);
+        $response = $model->deleteProduct($param);
 
         // Send Response
-        $this->response->sendStatus(200);
-        $this->response->setContent($data_list);
+        $this->response->sendStatus($response['status']);
+        $this->response->setContent($response['details']);
+    }
+
+    public function deleteMultiple() {
+        // Connect to database
+        $model = $this->model('products');
+
+        // Delete product
+        $response = $model->deleteMultipleProducts();
+
+        // Send Response
+        $this->response->sendStatus($response['status']);
+        $this->response->setContent(c);
+    }
+
+    public function searchByName($param) {
+        if (isset($param['name']) && $this->validSearchName($param['name'])) {
+            $model = $this->model('products');
+            $response = $model->searchByName($param);
+            $this->response->sendStatus($response['status']);
+            $this->response->setContent($response['details']);
+        } else {
+            $this->response->sendStatus(200);
+            $this->response->setContent([
+                'message' => 'Invalid search name'
+            ]);
+        }
+    }
+
+    private function validSearchName($name) {
+        // filter special characters
+        $name = preg_replace('/[^a-zA-Z0-9\s]/', '', $name);
+        return !empty($name) && !is_numeric($name) && strlen((string) $name) > 0;
     }
 }

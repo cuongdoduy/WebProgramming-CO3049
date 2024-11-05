@@ -122,9 +122,7 @@ class Router {
      */
     public function dispatch($url, $pattern) {
         preg_match_all('@:([\w]+)@', $pattern, $params, PREG_PATTERN_ORDER);
-
         $patternAsRegex = preg_replace_callback('@:([\w]+)@', [$this, 'convertPatternToRegex'], $pattern);
-
         if (substr($pattern, -1) === '/' ) {
 	        $patternAsRegex = $patternAsRegex . '?';
 	    }
