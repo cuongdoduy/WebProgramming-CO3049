@@ -113,9 +113,9 @@ class ModelsCustomers extends Model {
         $address = isset($body['address']) ? $body['address'] : '';
         $email = isset($body['email']) ? $body['email'] : '';
         $password = isset($body['password']) ? $body['password'] : '';
-        $adminID = isset($body['adminID']) ? $body['adminID'] : '';
+//        $adminID = isset($body['adminID']) ? $body['adminID'] : '';
         
-        if ($name == '' || $role == '' || $address == '' || $email == '' || $password == '' || $adminID == '') {
+        if ($name == '' || $role == '' || $address == '' || $email == '' || $password == '') {
             return ['status' => 400,
                 'details' => [
                     'message' => 'All fields are required'
@@ -124,7 +124,7 @@ class ModelsCustomers extends Model {
         }
 
         try {
-            $query = "INSERT INTO customer (Name, Role, Address, Email, Password, AdminID) VALUES ('$name', '$role', '$address', '$email', '$password', $adminID)";
+            $query = "INSERT INTO customer (Name, Role, Address, Email, Password) VALUES ('$name', '$role', '$address', '$email', '$password')";
             $this->db->query($query);
             return ['status' => 200,
                 'details' => [
