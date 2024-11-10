@@ -177,6 +177,7 @@ class Router {
         $this->getMatchRoutersByPattern($this->matchRouter);
 
         if (!$this->matchRouter || empty($this->matchRouter)) {
+            // doesn't match any route
 			$this->sendNotFound();        
 		} else {
             // call to callback method;

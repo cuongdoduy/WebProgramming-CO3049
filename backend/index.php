@@ -22,6 +22,8 @@ $response->setHeader('Content-Type: application/json; charset=UTF-8');
 // set request url and method
 $router = new Router\Router('/' . strtolower($request->getUrl()), $request->getMethod());
 
+//echo '/' . strtolower($request->getUrl()), $request->getMethod() . "\n";
+
 // import router file
 require 'Router/Router.php';
 
