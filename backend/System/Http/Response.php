@@ -154,6 +154,11 @@ class Response {
         $this->content = json_encode($content);
     }
 
+    // Set cookie
+    public function setCookie($name, $value, $expire = 0, $path = '/', $domain = '', $secure = false, $httponly = false) {
+        setcookie($name, $value, $expire, $path, $domain, $secure, $httponly);
+    }
+
     /**
      *  Get content response.
      *

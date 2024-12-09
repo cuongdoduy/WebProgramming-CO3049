@@ -1,4 +1,5 @@
-import React, { createContext, useState, ReactNode } from 'react'
+import { useSession } from 'next-auth/react'
+import React, { createContext, useState, ReactNode, useEffect } from 'react'
 
 export interface CartItem {
   id: number
@@ -30,51 +31,50 @@ interface CartProviderProps {
 }
 
 export const CartProvider: React.FC<CartProviderProps> = ({ children }) => {
-  const [cartItems, setCartItems] = useState<CartItem[]>([
-    {
-      id: 1,
-      title: 'LCD Monitor',
-      price: 200,
-      quantity: 1,
-      image: `${process.env.NEXT_PUBLIC_REDIRECT_URI}/images/lcd-monitor.png`,
-    },
-    {
-      id: 2,
-      title: 'Gaming Mouse',
-      price: 50,
-      quantity: 1,
-      image: `${process.env.NEXT_PUBLIC_REDIRECT_URI}/images/gaming-mouse.png`,
-    },
-  ])
+  const { data: session } = useSession()
+  const [cartItems, setCartItems] = useState<CartItem[]>([])
 
-  const updateCart = (item: CartItem) => {
-    const newCart = cartItems.map(cartItem => {
-      if (cartItem.id === item.id) {
-        return {
-          ...cartItem,
-          quantity: item.quantity,
-        }
-      }
-      return cartItem
-    })
+  // const updateCart = (item: CartItem) => {
+  //   const newCart = cartItems.map(cartItem => {
+  //     if (cartItem.id === item.id) {
+  //       return {
+  //         ...cartItem,
+  //         quantity: item.quantity,
+  //       }
+  //     }
+  //     return cartItem
+  //   })
 
-    setCartItems(newCart)
-  }
+  //   setCartItems(newCart)
+  // }
 
   const removeCart = (id: number) => {
     const newCart = cartItems.filter(item => item.id !== id)
     setCartItems(newCart)
   }
 
-  const addToCart = (item: CartItem) => {
+  const addToCart = async (item: CartItem) => {
     const existingItem = cartItems.find(cartItem => cartItem.id === item.id)
 
     if (existingItem) {
-      updateCart({
+      await updateItemInCart({
         ...existingItem,
-        quantity: existingItem.quantity + 1,
+        quantity: existingItem.quantity + item.quantity,
       })
     } else {
+      const res = await fetch(`/api/cart/${session?.user?.cart_id}`, {
+        method: 'POST',
+        headers: {
+          'Content-Type': 'application/json',
+        },
+        body: JSON.stringify({
+          product_id: item.id,
+          quantity: item.quantity,
+        }),
+      })
+      const data = await res.json()
+      console.log(data)
+
       setCartItems([...cartItems, item])
     }
   }
@@ -94,7 +94,18 @@ export const CartProvider: React.FC<CartProviderProps> = ({ children }) => {
     return cartItems.length
   }
 
-  const removeItem = (id: number) => {
+  const removeItem = async (id: number) => {
+    const res = await fetch(`/api/cart/${session?.user?.cart_id}`, {
+      method: 'DELETE',
+      headers: {
+        'Content-Type': 'application/json',
+      },
+      body: JSON.stringify({
+        product_id: id,
+      }),
+    })
+    const data = await res.json()
+    console.log(data)
     removeCart(id)
   }
 
@@ -102,7 +113,20 @@ export const CartProvider: React.FC<CartProviderProps> = ({ children }) => {
     return cartItems.some(item => item.id === id)
   }
 
-  const updateItemInCart = (item: CartItem) => {
+  const updateItemInCart = async (item: CartItem) => {
+    const response = await fetch(`/api/cart/${session?.user?.cart_id}`, {
+      method: 'PUT',
+      headers: {
+        'Content-Type': 'application/json',
+      },
+      body: JSON.stringify({
+        product_id: item.id,
+        quantity: item.quantity,
+      }),
+    })
+    const data = await response.json()
+    console.log(data)
+
     const newCart = cartItems.map(cartItem => {
       if (cartItem.id === item.id) {
         return {
@@ -115,6 +139,40 @@ export const CartProvider: React.FC<CartProviderProps> = ({ children }) => {
 
     setCartItems(newCart)
   }
+
+  useEffect(() => {
+    const fetchcartItems = async () => {
+      const response = await fetch(`
+        /api/cart/${session?.user?.cart_id}`)
+      const data = await response.json()
+      const cartItems = data.map(
+        (product: {
+          id: number
+          title: string
+          price: number
+          image: string
+          discount: number
+          reviews: number
+          rating: number
+          slug: string
+          quantity: number
+        }) => {
+          return {
+            id: product.id,
+            title: product.title,
+            price: product.price,
+            quantity: product.quantity,
+            image: product.image,
+          }
+        }
+      )
+      setCartItems(cartItems)
+    }
+
+    if (session) {
+      fetchcartItems()
+    }
+  }, [session])
 
   return (
     <CartContext.Provider

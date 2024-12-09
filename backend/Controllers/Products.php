@@ -11,7 +11,10 @@ class Products  extends Controller {
 
         // Get product(s)
         $response = null;
-        if(isset($param['id'])) {
+
+        if (isset($_GET['slug'])) {
+            $response = $model->getProductBySlug($param);
+        } else if(isset($param['id'])) {
             $response = $model->getProduct($param);
         } else {
             $response = $model->getAllProducts($param);

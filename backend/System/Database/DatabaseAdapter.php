@@ -58,4 +58,11 @@ class DatabaseAdapter {
     public function getLastId() {
         return $this->dbConnection->getLastId();
     }
+
+    /**
+     * @return mixed
+     */
+    public function prepare($sql) {
+        return $this->dbConnection->prepare($sql);
+    }
 }

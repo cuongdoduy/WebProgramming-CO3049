@@ -1,14 +1,19 @@
+import { WishlistContext } from '@/contexts/WishlistContext'
 import {
   EyeIcon,
   HeartIcon,
   ShoppingCartIcon,
 } from '@heroicons/react/24/outline'
-import { StarIcon } from '@heroicons/react/24/solid'
+import {
+  StarIcon,
+  HeartIcon as HeartIconSolid,
+} from '@heroicons/react/24/solid'
 
 import { Typography } from '@material-tailwind/react'
+import { useSession } from 'next-auth/react'
 import Image from 'next/image'
 import Link from 'next/link'
-import React from 'react'
+import React, { useContext } from 'react'
 
 const FullStar = () => <StarIcon className="w-4 h-4 text-[#FFC107]" />
 const HalfStar = () => (
@@ -60,9 +65,67 @@ const Product: React.FC<{
   discount: number
   rating: number
   reviews: number
-}> = ({ title, price, image, discount, rating, reviews, id }) => {
+  slug: string
+}> = ({ title, price, image, discount, rating, reviews, slug, id }) => {
+
+  const { data: session } = useSession()
+
   // create a state to check if the product is hovered
   const [isHovered, setIsHovered] = React.useState(false)
+  const { isItemExist, addToWishlist, removeItem } = useContext(WishlistContext) || {
+    // eslint-disable-next-line no-unused-vars
+    isItemExist: (id: number) => {},
+    addToWishlist: () => {},
+    // eslint-disable-next-line no-unused-vars
+    removeItem: (id: number) => {},
+  }
+
+  const handleAddToWishlist = async () => {
+    const res = await fetch(`/api/products/${id}`)
+    const data = await res.json()
+    const product = data.data
+    const wishlistItem = {
+      id: product.id,
+      title: product.name,
+      price: product.price,
+      image: product.cover,
+      discount: product.discount,
+    }
+    addToWishlist(wishlistItem)
+
+    if (session && session.user && session.user.id) {
+      const res = await fetch(`/api/wishlist`, {
+        method: 'POST',
+        headers: {
+          'Content-Type': 'application/json',
+        },
+        body: JSON.stringify({
+          product_id: id,
+          customer_id: session.user.id,
+        }),
+      })
+      const data = await res.json()
+      console.log(data)
+    }
+  }
+
+  const handleRemoveFromWishlist = async () => {
+    removeItem(id)
+    if (session && session.user && session.user.id) {
+      const res = await fetch(`/api/wishlist`, {
+        method: 'DELETE',
+        headers: {
+          'Content-Type': 'application/json',
+        },
+        body: JSON.stringify({
+          product_id: id,
+          customer_id: session.user.id,
+        }),
+      })
+      const data = await res.json()
+      console.log(data)
+    }
+  }
 
   // handle mouse enter and leave events
   const handleMouseEnter = () => setIsHovered(true)
@@ -70,7 +133,7 @@ const Product: React.FC<{
 
   return (
     <div>
-      <Link href={`/products/${id}`}>
+      <Link href={`/products/${slug}`}>
         <div
           className="bg-[#F5F5F5] rounded-[4px] relative"
           onMouseEnter={handleMouseEnter}
@@ -83,14 +146,27 @@ const Product: React.FC<{
             )}
             {isHovered && (
               <div className="absolute top-0 right-[10%] top-[5%] flex-1 flex flex-col space-y-2 animate-fadeIn">
-                <div
-                  className="w-fit ml-auto bg-white rounded-full p-2 cursor-pointer"
-                  onClick={e => {
-                    e.preventDefault()
-                    e.stopPropagation()
-                  }}>
-                  <HeartIcon className="text-black w-6 h-6" />
-                </div>
+                {isItemExist(id) ? (
+                  <div
+                    className="w-fit ml-auto bg-white rounded-full p-2 cursor-pointer"
+                    onClick={e => {
+                      e.preventDefault()
+                      e.stopPropagation()
+                      handleRemoveFromWishlist()
+                    }}>
+                    <HeartIconSolid className="text-[#DB4444] w-6 h-6" />
+                  </div>
+                ) : (
+                  <div
+                    className="w-fit ml-auto bg-white rounded-full p-2 cursor-pointer"
+                    onClick={e => {
+                      e.preventDefault()
+                      e.stopPropagation()
+                      handleAddToWishlist()
+                    }}>
+                    <HeartIcon className="text-black w-6 h-6" />
+                  </div>
+                )}
                 <div
                   className="w-fit ml-auto bg-white rounded-full p-2 cursor-pointer"
                   onClick={e => {
@@ -127,7 +203,7 @@ const Product: React.FC<{
           </div>
         </div>
       </Link>
-      <Link href={`/products/${id}`}>
+      <Link href={`/products/${slug}`}>
         <div className="z-5 relative">
           <Typography
             as="p"

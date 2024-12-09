@@ -27,83 +27,113 @@ const Cart = () => {
           </Link>
           <Link href="/cart">Cart</Link>
         </Breadcrumbs>
-        <div className="mt-[60px]">
-          <ProductList list={cartItems} />
-        </div>
-        <div className="my-12 mb-6 flex justify-between w-full items-center">
-          <SecondaryButton title="Return To Shop" />
-          <SecondaryButton title="Update Cart" />
-        </div>
-        <div className="my-12 grid grid-cols-2 items-start">
-          <div className="flex justify-start items-center space-x-4 col-span-1">
-            <div className="relative bg-transparent mr-4 border border-black rounded-md">
-              <input
-                type="search"
-                id="default-search"
-                className="block w-full text-sm bg-transparent h-full focus:outline-none pl-4 py-4 min-w-[240px]"
-                placeholder="Coupon Code"
-                required
-              />
-            </div>
-            <PrimaryButton title="Apply Coupon" />
+        {cartItems.length === 0 ? (
+          <div className="flex justify-center items-center h-[60vh]">
+            <Typography
+              as="h3"
+              variant="h3"
+              className="text-[#333] text-center">
+              Your Cart is Empty
+            </Typography>
           </div>
-          <div className="col-span-1 min-w-[450px] max-w-[550px] border border-black p-4 ml-auto rounded-md">
-            <div>
-              <Typography as="h5" variant="h5" className="py-1.5 font-[600]">
-                Cart Total
-              </Typography>
-              <div className="flex justify-between">
-                <Typography
-                  as="p"
-                  variant="paragraph"
-                  className="py-1.5 font-[400] text-[18px]">
-                  Subtotal
-                </Typography>
-                <Typography
-                  as="p"
-                  variant="paragraph"
-                  className="py-1.5 font-[400] text-[18px]">
-                  ${cartItems.reduce((acc, item) => acc + item.price*item.quantity, 0)}
-                </Typography>
-              </div>
-              <hr className="my-2 border border-gray-400" />
-              <div className="flex justify-between">
-                <Typography
-                  as="p"
-                  variant="paragraph"
-                  className="py-1.5 font-[400] text-[18px]">
-                  Shipping:
-                </Typography>
-                <Typography
-                  as="p"
-                  variant="paragraph"
-                  className="py-1.5 font-[400] text-[18px]">
-                  Free
-                </Typography>
-              </div>
-              <hr className="my-2 border border-gray-400" />
-              <div className="flex justify-between">
-                <Typography
-                  as="p"
-                  variant="paragraph"
-                  className="py-1.5 font-[400] text-[18px]">
-                  Total:
-                </Typography>
-                <Typography
-                  as="p"
-                  variant="paragraph"
-                  className="py-1.5 font-[400] text-[18px]">
-                  ${cartItems.reduce((acc, item) => acc + item.price*item.quantity, 0)}
-                </Typography>
-              </div>
-              <Link href="/cart/checkout">
-                <div className="w-fit mx-auto my-2">
-                  <PrimaryButton title="Proceed To Checkout" />
+        ) : (
+          <>
+            <div className="mt-[60px]">
+              <ProductList list={cartItems} />
+            </div>
+            <div className="my-12 mb-6 flex justify-between w-full items-center">
+              <SecondaryButton title="Return To Shop" />
+              <SecondaryButton title="Update Cart" />
+            </div>
+            <div className="my-12 grid grid-cols-2 items-start">
+              <div className="flex justify-start items-center space-x-4 col-span-1">
+                <div className="relative bg-transparent mr-4 border border-black rounded-md">
+                  <input
+                    type="search"
+                    id="default-search"
+                    className="block w-full text-sm bg-transparent h-full focus:outline-none pl-4 py-4 min-w-[240px]"
+                    placeholder="Coupon Code"
+                    required
+                  />
                 </div>
-              </Link>
+                <PrimaryButton
+                  title="Apply Coupon"
+                  className="min-w-[250px] !py-4"
+                />
+              </div>
+              <div className="col-span-1 min-w-[450px] max-w-[550px] border border-black p-4 ml-auto rounded-md">
+                <div>
+                  <Typography
+                    as="h5"
+                    variant="h5"
+                    className="py-1.5 font-[600]">
+                    Cart Total
+                  </Typography>
+                  <div className="flex justify-between">
+                    <Typography
+                      as="p"
+                      variant="paragraph"
+                      className="py-1.5 font-[400] text-[18px]">
+                      Subtotal
+                    </Typography>
+                    <Typography
+                      as="p"
+                      variant="paragraph"
+                      className="py-1.5 font-[400] text-[18px]">
+                      $
+                      {cartItems.reduce(
+                        (acc, item) => acc + item.price * item.quantity,
+                        0
+                      )}
+                    </Typography>
+                  </div>
+                  <hr className="my-2 border border-gray-400" />
+                  <div className="flex justify-between">
+                    <Typography
+                      as="p"
+                      variant="paragraph"
+                      className="py-1.5 font-[400] text-[18px]">
+                      Shipping:
+                    </Typography>
+                    <Typography
+                      as="p"
+                      variant="paragraph"
+                      className="py-1.5 font-[400] text-[18px]">
+                      Free
+                    </Typography>
+                  </div>
+                  <hr className="my-2 border border-gray-400" />
+                  <div className="flex justify-between">
+                    <Typography
+                      as="p"
+                      variant="paragraph"
+                      className="py-1.5 font-[400] text-[18px]">
+                      Total:
+                    </Typography>
+                    <Typography
+                      as="p"
+                      variant="paragraph"
+                      className="py-1.5 font-[400] text-[18px]">
+                      $
+                      {cartItems.reduce(
+                        (acc, item) => acc + item.price * item.quantity,
+                        0
+                      )}
+                    </Typography>
+                  </div>
+                  <Link href="/cart/checkout">
+                    <div className="w-fit mx-auto my-2">
+                      <PrimaryButton
+                        title="Proceed To Checkout"
+                        className="min-w-[250px] !py-4"
+                      />
+                    </div>
+                  </Link>
+                </div>
+              </div>
             </div>
-          </div>
-        </div>
+          </>
+        )}
       </div>
       <Footer />
     </Fragment>

@@ -9,6 +9,7 @@ import { ProductProps } from '@/page-sections/CartPage/Product'
 import PrimaryButton from '@/components/PrimaryButton'
 import ItemList from '@/page-sections/CheckoutPage/ItemList'
 import ContactInformation from '@/page-sections/CheckoutPage/ContactInformation'
+import { useSession } from 'next-auth/react'
 
 const Checkout = () => {
   const { cartItems } =
@@ -16,10 +17,60 @@ const Checkout = () => {
     ({
       cartItems: [],
     } as { cartItems: ProductProps[] })
+
+  const { data: session } = useSession()
+
+  const [customerInfo, setCustomerInfo] = React.useState({
+    firstName: '',
+    lastName: '',
+    streetAddress: '',
+    apartmentFloor: '',
+    townCity: '',
+    phoneNumber: '',
+    emailAddress: '',
+  })
+
+  const handleCustomerInfoChange = (
+    e: React.ChangeEvent<HTMLInputElement>,
+    key: string
+  ) => {
+    setCustomerInfo({
+      ...customerInfo,
+      [key]: e.target.value,
+    })
+  }
+
+  const handlePlaceOrder = async () => {
+    const res = await fetch('/api/orders', {
+      method: 'POST',
+      body: JSON.stringify({
+        cart_id: session?.user?.cart_id,
+        customer_id: session?.user?.id,
+        first_name: customerInfo.firstName,
+        last_name: customerInfo.lastName,
+        street_address: customerInfo.streetAddress,
+        apartment_floor: customerInfo.apartmentFloor,
+        town_city: customerInfo.townCity,
+        phone_number: customerInfo.phoneNumber,
+        email_address: customerInfo.emailAddress,
+      }),
+      headers: {
+        'Content-Type': 'application/json',
+      },
+    })
+    const data = await res.json()
+    console.log(data)
+    if (res.status === 200) {
+      alert('Order placed successfully')
+      window.location.href = '/cart/success'
+    } else {
+      alert('Order failed')
+    }
+  }
+
   return (
     <Fragment>
       <NavbarWithMegaMenu />
-
       <div className="w-[80%] mx-auto my-12">
         <Breadcrumbs className="bg-white p-0">
           <Link href="/" className="opacity-60">
@@ -32,7 +83,10 @@ const Checkout = () => {
         </Breadcrumbs>
         <div className="grid grid-cols-12 gap-6 mt-[40px]">
           <div className="col-span-6">
-            <ContactInformation />
+            <ContactInformation
+              customerInfo={customerInfo}
+              handleDataChange={handleCustomerInfoChange}
+            />
           </div>
           <div className="col-span-6  max-w-[550px] mr-auto">
             <div>
@@ -98,13 +152,19 @@ const Checkout = () => {
                   />
                 </div>
                 <div className="my-4">
-                  <PrimaryButton title="Apply Coupon" />
+                  <PrimaryButton
+                    title="Apply Coupon"
+                    className="min-w-[250px] !py-4"
+                  />
                 </div>
               </div>
               <div className="my-4">
-                <Link href="/cart/checkout">
-                  <PrimaryButton title="Place Order" />
-                </Link>
+                <div onClick={handlePlaceOrder}>
+                  <PrimaryButton
+                    title="Place Order"
+                    className="min-w-[250px] !py-4"
+                  />
+                </div>
               </div>
             </div>
           </div>

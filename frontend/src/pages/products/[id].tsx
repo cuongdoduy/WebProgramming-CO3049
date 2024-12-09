@@ -6,35 +6,27 @@ import ProductDescription from '@/page-sections/ProductDetailPage/ProductDescrip
 import ProductImageList from '@/page-sections/ProductDetailPage/ProductImageList'
 import ForYouList from '@/page-sections/WishlistPage/ForYouList'
 import { Breadcrumbs, Typography } from '@material-tailwind/react'
+import { GetStaticPaths, GetStaticProps } from 'next'
 import Head from 'next/head'
 import Link from 'next/link'
 import React, { Fragment, useEffect, useState } from 'react'
 
-const ProductDetail = () => {
-  const [productData, setProductData] = useState<{
+const ProductDetail: React.FC<{
+  data: {
+    id: number
     name: string
     rate: number
     reviews: number
     status: 'In Stock' | 'Out of Stock'
     price: number
+    slug: string
     discount: number
     description: string
     colors: Array<string>
     sizes: Array<'XS' | 'S' | 'M' | 'L' | 'XL' | 'XXL'>
     images: Array<string>
-  }>({
-    name: '',
-    rate: 0,
-    reviews: 0,
-    status: 'In Stock',
-    price: 0,
-    discount: 0,
-    description: '',
-    colors: [],
-    sizes: [],
-    images: [],
-  })
-
+  }
+}> = ({ data }) => {
   const [forYouItems, setForYouItems] = useState<
     Array<{
       id: number
@@ -49,23 +41,12 @@ const ProductDetail = () => {
 
   useEffect(() => {
     const fetchData = async () => {
-      const product_data = fetch('/api/products/havic-hv-g92-gamepad')
-      const items_for_you = fetch('/api/products/for-you')
-      const [productDataResponse, forYouItemsResponse] = await Promise.all([
-        product_data,
-        items_for_you,
-      ])
-
-      const data = await productDataResponse.json()
-      setProductData(data.data)
-
-      const forYouItems = await forYouItemsResponse.json()
+      const items_for_you = await fetch('/api/products/for-you')
+      const forYouItems = await items_for_you.json()
       setForYouItems(forYouItems)
     }
     fetchData()
   }, [])
-
-  console.log(productData)
 
   return (
     <Fragment>
@@ -77,18 +58,14 @@ const ProductDetail = () => {
             Home
           </Link>
           <Link href="/products">Products</Link>
-          <Link
-            href="/products/havic-hv-g92-gamepad
-          ">
-            Havic HV G-92 Gamepad
-          </Link>
+          <Link href={`/products/${data.slug}`}>{data.name}</Link>
         </Breadcrumbs>
         <div className="mt-[60px] grid grid-cols-12 gap-x-6">
           <div className="col-span-8">
-            <ProductImageList productImages={productData.images} />
+            <ProductImageList productImages={data.images} />
           </div>
           <div className="col-span-4">
-            <ProductDescription data={productData} />
+            <ProductDescription data={data} />
           </div>
         </div>
         <div className="my-12 mb-6 flex justify-between w-full items-center">
@@ -145,7 +122,10 @@ const MetaTags = () => {
         content="The best place to buy your favorite products. We offer a wide range of products from electronics to fashion."
       />
       <meta property="og:sitename" content="Exclusive" />
-      <meta property="og:url" content="https://web-programming-co-3049.vercel.app" />
+      <meta
+        property="og:url"
+        content="https://web-programming-co-3049.vercel.app"
+      />
       <meta property="og:type" content="website" />
       <meta property="og:locale" content="en_US" />
       <meta property="og:updated_time" content="2024-10-22T02:08:26+00:00" />
@@ -194,6 +174,69 @@ const MetaTags = () => {
       />
     </Head>
   )
+}
+
+export const getStaticPaths: GetStaticPaths = async () => {
+  const res = await fetch(`${process.env.BACKEND_URL}/products/1`)
+  const data = await res.json()
+
+  const paths = data.data.map(
+    (product: {
+      id: number
+      name: string
+      price: number
+      description: string
+      status: string
+      img: string
+      discount: number
+      total_ratings: number
+      average_rating: number
+      slug: string
+    }) => ({
+      params: { id: product.slug.toString() },
+    })
+  )
+  return { paths, fallback: true }
+}
+
+export const getStaticProps: GetStaticProps = async ({ params }) => {
+  const slug = params?.id
+  const res = await fetch(`${process.env.BACKEND_URL}/product?slug=${slug}`)
+  const data = await res.json()
+
+  const productDetailData: {
+    id: number
+    name: string
+    price: number
+    description: string
+    status: string
+    img: string
+    discount: number
+    slug: string
+    total_ratings: number
+    average_rating: number
+    images: Array<string>
+  } = data.data[0]
+
+  return {
+    props: {
+      data: {
+        id: productDetailData.id,
+        name: productDetailData.name,
+        rate: productDetailData.average_rating,
+        reviews: productDetailData.total_ratings,
+        status: productDetailData.status,
+        price: productDetailData.price,
+        slug: productDetailData.slug,
+        discount: productDetailData.discount,
+        description: productDetailData.description,
+        images: productDetailData.images,
+        sizes: ['XS', 'S', 'M', 'L', 'XL', 'XXL'],
+        colors: ['#A0BCE0', '#E07575'],
+      },
+    },
+    revalidate: 60,
+  }
 }
 
 export default ProductDetail

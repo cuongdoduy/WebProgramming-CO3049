@@ -1,6 +1,23 @@
 import React from 'react'
 
-const ContactInformation = () => {
+const ContactInformation: React.FC<{
+  customerInfo: {
+    firstName: string
+    lastName: string
+    streetAddress: string
+    apartmentFloor: string
+    townCity: string
+    phoneNumber: string
+    emailAddress: string
+  }
+  
+  handleDataChange: (
+    // eslint-disable-next-line no-unused-vars
+    e: React.ChangeEvent<HTMLInputElement>,
+    // eslint-disable-next-line no-unused-vars
+    key: string
+  ) => void
+}> = ({ customerInfo, handleDataChange }) => {
   return (
     <div>
       <form>
@@ -17,6 +34,8 @@ const ContactInformation = () => {
               className="bg-gray-50 border border-gray-300 text-gray-900 text-sm rounded-lg focus:ring-blue-500 focus:border-blue-500 block w-full p-2.5 dark:bg-gray-700 dark:border-gray-600 dark:placeholder-gray-400 dark:text-white dark:focus:ring-blue-500 dark:focus:border-blue-500"
               placeholder="John"
               required
+              value={customerInfo.firstName}
+              onChange={e => handleDataChange(e, 'firstName')}
             />
           </div>
           <div>
@@ -31,6 +50,8 @@ const ContactInformation = () => {
               className="bg-gray-50 border border-gray-300 text-gray-900 text-sm rounded-lg focus:ring-blue-500 focus:border-blue-500 block w-full p-2.5 dark:bg-gray-700 dark:border-gray-600 dark:placeholder-gray-400 dark:text-white dark:focus:ring-blue-500 dark:focus:border-blue-500"
               placeholder="Doe"
               required
+              value={customerInfo.lastName}
+              onChange={e => handleDataChange(e, 'lastName')}
             />
           </div>
           <div>
@@ -45,6 +66,8 @@ const ContactInformation = () => {
               className="bg-gray-50 border border-gray-300 text-gray-900 text-sm rounded-lg focus:ring-blue-500 focus:border-blue-500 block w-full p-2.5 dark:bg-gray-700 dark:border-gray-600 dark:placeholder-gray-400 dark:text-white dark:focus:ring-blue-500 dark:focus:border-blue-500"
               placeholder="123 Main St"
               required
+              value={customerInfo.streetAddress}
+              onChange={e => handleDataChange(e, 'streetAddress')}
             />
           </div>
           <div>
@@ -58,6 +81,8 @@ const ContactInformation = () => {
               id="apartment"
               className="bg-gray-50 border border-gray-300 text-gray-900 text-sm rounded-lg focus:ring-blue-500 focus:border-blue-500 block w-full p-2.5 dark:bg-gray-700 dark:border-gray-600 dark:placeholder-gray-400 dark:text-white dark:focus:ring-blue-500 dark:focus:border-blue-500"
               placeholder="Apartment, floor, etc."
+              value={customerInfo.apartmentFloor}
+              onChange={e => handleDataChange(e, 'apartmentFloor')}
             />
           </div>
           <div>
@@ -72,6 +97,8 @@ const ContactInformation = () => {
               className="bg-gray-50 border border-gray-300 text-gray-900 text-sm rounded-lg focus:ring-blue-500 focus:border-blue-500 block w-full p-2.5 dark:bg-gray-700 dark:border-gray-600 dark:placeholder-gray-400 dark:text-white dark:focus:ring-blue-500 dark:focus:border-blue-500"
               placeholder="New York"
               required
+              value={customerInfo.townCity}
+              onChange={e => handleDataChange(e, 'townCity')}
             />
           </div>
           <div>
@@ -85,8 +112,9 @@ const ContactInformation = () => {
               id="phone"
               className="bg-gray-50 border border-gray-300 text-gray-900 text-sm rounded-lg focus:ring-blue-500 focus:border-blue-500 block w-full p-2.5 dark:bg-gray-700 dark:border-gray-600 dark:placeholder-gray-400 dark:text-white dark:focus:ring-blue-500 dark:focus:border-blue-500"
               placeholder="123-45-678"
-              pattern="[0-9]{3}-[0-9]{2}-[0-9]{3}"
               required
+              value={customerInfo.phoneNumber}
+              onChange={e => handleDataChange(e, 'phoneNumber')}
             />
           </div>
           <div>
@@ -101,6 +129,8 @@ const ContactInformation = () => {
               className="bg-gray-50 border border-gray-300 text-gray-900 text-sm rounded-lg focus:ring-blue-500 focus:border-blue-500 block w-full p-2.5 dark:bg-gray-700 dark:border-gray-600 dark:placeholder-gray-400 dark:text-white dark:focus:ring-blue-500 dark:focus:border-blue-500"
               placeholder="john.doe@company.com"
               required
+              value={customerInfo.emailAddress}
+              onChange={e => handleDataChange(e, 'emailAddress')}
             />
           </div>
           {/* <div>
@@ -132,7 +162,7 @@ const ContactInformation = () => {
             required
           />
         </div> */}
-        <div className="flex items-start mb-6">
+        {/* <div className="flex items-start mb-6">
           <div className="flex items-center h-5">
             <label className="flex items-center cursor-pointer relative mr-2">
               <input
@@ -157,7 +187,7 @@ const ContactInformation = () => {
             </label>
             <p>Save this information for faster check-out next time .</p>
           </div>
-        </div>
+        </div> */}
       </form>
     </div>
   )

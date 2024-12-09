@@ -112,6 +112,7 @@ class Router {
     private function getMatchRoutersByPattern($pattern) {
         $this->matchRouter = [];
         foreach ($pattern as $value) {
+            // echo $value->getPattern() . PHP_EOL;
             if ($this->dispatch($this->url, $value->getPattern()))
                 array_push($this->matchRouter, $value);
         }
@@ -122,11 +123,17 @@ class Router {
      */
     public function dispatch($url, $pattern) {
         preg_match_all('@:([\w]+)@', $pattern, $params, PREG_PATTERN_ORDER);
+
+        // allow query string in url like /products?page=1
+
         $patternAsRegex = preg_replace_callback('@:([\w]+)@', [$this, 'convertPatternToRegex'], $pattern);
         if (substr($pattern, -1) === '/' ) {
 	        $patternAsRegex = $patternAsRegex . '?';
 	    }
-        $patternAsRegex = '@^' . $patternAsRegex . '$@';
+        $patternAsRegex = '@^' . $patternAsRegex . '(\&amp;.*)?$@';
+
+        // echo $patternAsRegex . PHP_EOL;
+        // echo $url . PHP_EOL;
         
         // check match request url
         if (preg_match($patternAsRegex, $url, $paramsValue)) {

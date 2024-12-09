@@ -12,13 +12,6 @@ $router->get('/', function() {
     echo "Hello World!!!";
 });
 
-$router->get('/product', function() {
-    $GLOBALS['response']->sendStatus(400);
-    $GLOBALS['response']->setContent([
-        'message' => 'Product ID is required'
-    ]);
-});
-
 $router->put('/product', function() {
     $GLOBALS['response']->sendStatus(400);
     $GLOBALS['response']->setContent([
@@ -42,6 +35,7 @@ $router->delete('/product', function() {
 // products router
 $router->get('/products', 'Products@products');
 $router->get('/products/:page', 'Products@products');
+$router->get('/product', 'Products@products');
 $router->get('/product/:id', 'Products@products');
 $router->post('/product', 'Products@create');
 $router->put('/product/:id', 'Products@update');
@@ -54,14 +48,34 @@ $router->get('/products/name/:name/:page', 'Products@searchByName');
 
 // customers router
 $router->get('/customers', 'Customers@customers');
-$router->get('/customer/:id', 'Customers@customers');
-$router->get('/customers/:page', 'Customers@customers');
+$router->get('/customers/:id/wishlist', 'Customers@getCustomerWishlist');
+$router->post('/customers/:id/password', 'Customers@changePassword');
+$router->get('/customers/:id', 'Customers@customers');
 $router->post('/customer', 'Customers@create');
-$router->put('/customer/:id', 'Customers@update');
+$router->get('/customers/:id/orders', 'Customers@getCustomerOrders');
+$router->put('/customers/:id', 'Customers@update');
 $router->delete('/customer/:id', 'Customers@delete');
 $router->delete('/customers', 'Customers@deleteMultiple');
 
 // authentication router
 $router->post('/login', 'Authentication@login');
-$router->get('/logout', 'Authentication@logout');
+$router->post('/logout', 'Authentication@logout');
 $router->get('/showinfo', 'Authentication@showinfo');
+
+// tags router
+$router->get('/tags', 'Tags@tags');
+$router->get('/tags/:id', 'Tags@getTagById');
+
+// wishlist router
+$router->post('/wishlist', 'Wishlist@add');
+$router->delete('/wishlist', 'Wishlist@delete');
+
+//cart router
+$router->get('/cart/:id', 'Cart@getCart');
+$router->get('/cart', 'Cart@cart');
+$router->post('/cart/:id', 'Cart@add');
+$router->put('/cart/:id', 'Cart@update');
+$router->delete('/cart/:id', 'Cart@delete');
+
+//order router
+$router->post('/order', 'Order@create');

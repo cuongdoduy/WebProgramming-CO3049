@@ -35,6 +35,10 @@ class MySQLi {
       return $result;
     }
 
+    public function getLastId() {
+        return $this->mysqli->insert_id;
+    }
+
     /**
      *  claen data
      */

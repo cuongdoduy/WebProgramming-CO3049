@@ -10,6 +10,7 @@ interface ForYouItemProps {
   discount: number
   rating: number
   reviews: number
+  slug: string
 }
 
 const ProductSlider: React.FC<{

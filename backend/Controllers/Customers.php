@@ -68,4 +68,40 @@ class Customers  extends Controller {
         $this->response->sendStatus($response['status']);
         $this->response->setContent($response['details']);
     }
+
+    public function getCustomerWishlist($param) {
+        // Connect to database
+        $model = $this->model('customers');
+
+        // Get customer(s)
+        $response = $model->getCustomerWishlist($param['id']);
+
+        // Send Response
+        $this->response->sendStatus($response['status']);
+        $this->response->setContent($response['details']);
+    }
+
+    public function getCustomerOrders($param) {
+        // Connect to database
+        $model = $this->model('customers');
+
+        // Get customer(s)
+        $response = $model->getCustomerOrders($param['id']);
+
+        // Send Response
+        $this->response->sendStatus($response['status']);
+        $this->response->setContent($response['details']);
+    }
+
+    public function changePassword($param) {
+        // Connect to database
+        $model = $this->model('customers');
+
+        // Get customer(s)
+        $response = $model->changePassword($param);
+
+        // Send Response
+        $this->response->sendStatus($response['status']);
+        $this->response->setContent($response['details']);
+    }
 }

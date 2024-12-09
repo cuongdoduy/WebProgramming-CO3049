@@ -14,46 +14,62 @@ use MVC\Model;
 class ModelsProducts extends Model {
 
     public function getAllProducts($param) {
-        // sql statement
-        $query = "SELECT * FROM product";
-
-        // pagination
+        // SQL statement
+        $query = "SELECT 
+                    p.id, 
+                    p.product_name AS name, 
+                    p.price, 
+                    p.description, 
+                    p.status, 
+                    p.slug,
+                    p.cover AS img, 
+                    COALESCE(p.discount, 0) AS discount, 
+                    COUNT(r.id) AS total_ratings, 
+                    COALESCE(AVG(r.star), 5) AS average_rating
+                  FROM 
+                    Product p 
+                  LEFT JOIN 
+                    Comment r 
+                  ON 
+                    p.id = r.product_id 
+                  GROUP BY 
+                    p.id, p.product_name, p.price, p.description, p.status, p.cover, p.discount,p.slug";
+    
+        // Pagination
         $this->pagination->total = $this->getCountProducts();
-
+    
         if (isset($param['page']) && is_numeric($param['page'])) {
             $this->pagination->page = (int) $param['page'];
         } else {
             $this->pagination->page = 1;
         }
-
-        // render page data
-        $page_data = $this->pagination->render();  
-        $offset = ($this->pagination->page - 1) * $page_data['limit']; 
-
-        $query .= " ORDER BY ProductID ASC LIMIT ". $page_data['limit'] . " OFFSET $offset" ;
-
-        // exec query
+    
+        // Render page data
+        $page_data = $this->pagination->render();
+        $offset = ($this->pagination->page - 1) * $page_data['limit'];
+        $query .= " ORDER BY p.id ASC LIMIT " . $page_data['limit'] . " OFFSET $offset";
+    
+        // Execute query
         $result = $this->db->query($query);
-        $data = array();
-
-        if ($result->num_rows > 0) {
-            // output data of each row
-            while($row = $result->fetch_assoc()) { 
-                array_push($data, [
-                    'id' => $row["ProductID"],
-                    'name' => $row["ProductName"],
-                    'price' => $row["Price"],
-                    'description' => $row["Description"],
-                    'cartID' => $row["cart_ID"],
-                    'status' => $row["Status"],
-                    'adminID' => $row["AdminID"],
-                    'img' => $row["image"],
-                ]);
+        $data = [];
+    
+        if ($result && $result->num_rows > 0) {
+            while ($row = $result->fetch_assoc()) {
+                $data[] = [
+                    'id' => (int) $row["id"],
+                    'name' => $row["name"],
+                    'price' => (float) $row["price"],
+                    'description' => $row["description"],
+                    'status' => $row["status"],
+                    'slug' => $row["slug"], 
+                    'img' => $row["img"],
+                    'discount' => (int) $row["discount"],
+                    'total_ratings' =>(int) $row["total_ratings"],
+                    'average_rating' => round((float) $row["average_rating"], 2)
+                ];
             }
-          } else {
-            echo "0 results";
         }
-        
+    
         return [
             'status' => 200,
             'details' => [
@@ -130,25 +146,115 @@ class ModelsProducts extends Model {
             ];
         }
 
-        $query = "SELECT * FROM product WHERE ProductID = $id";
-        $result = $this->db->query($query);
-        $data = array();
+        $query = "SELECT
+                    p.id,
+                    p.product_name AS name,
+                    p.price,
+                    p.description,
+                    p.status,
+                    p.cover AS img,
+                    GROUP_CONCAT(pi.image_url) AS images,
+                    COALESCE(p.discount, 0) AS discount,
+                    COUNT(r.id) AS total_ratings,
+                    COALESCE(AVG(r.star), 5) AS average_rating
+                  FROM
+                    Product p
+                  LEFT JOIN product_images pi ON p.id = pi.product_id
+                  LEFT JOIN
+                    Comment r
+                  ON
+                    p.id = r.product_id
+                  WHERE p.id = $id
+                  GROUP BY
+                    p.id, p.product_name, p.price, p.description, p.status, p.cover, p.discount";
 
-        if ($result->num_rows > 0) {
-            // output data of each row
-            while($row = $result->fetch_assoc()) { 
-                array_push($data, [
-                    'id' => $row["ProductID"],
-                    'name' => $row["ProductName"],
-                    'price' => $row["Price"],
-                    'description' => $row["Description"],
-                    'cartID' => $row["cart_ID"],
-                    'status' => $row["Status"],
-                    'adminID' => $row["AdminID"],
-                    'img' => $row["image"],
-                ]);
+        $result = $this->db->query($query);
+        $data = [];
+    
+        if ($result && $result->num_rows > 0) {
+            while ($row = $result->fetch_assoc()) {
+                $data[] = [
+                    'id' => (int) $row["id"],
+                    'name' => $row["name"],
+                    'price' => (float) $row["price"],
+                    'description' => $row["description"],
+                    'status' => $row["status"],
+                    'img' => $row["img"],
+                    'images' => explode(',', $row["images"]),
+                    'discount' => (int) $row["discount"],
+                    'total_ratings' =>(int) $row["total_ratings"],
+                    'average_rating' => round((float) $row["average_rating"], 2)
+                ];
             }
-          } else {
+        } else {
+            return ['status' => 400,
+                'details' => [
+                    'message' => 'Product not found'
+                ]
+            ];
+        }
+        
+        return [
+            'status' => 200,
+            'details' => [
+                'data' => $data
+            ]
+        ];
+    }
+
+    public function getProductBySlug($param) {
+        $slug = isset($_GET['slug']) ? $_GET['slug'] : '';
+        if ($slug == '') {
+            return ['status' => 400,
+                'details' => [
+                    'message' => 'Product slug is required'
+                ]
+            ];
+        }
+
+        $query = "SELECT
+                    p.id,
+                    p.product_name AS name,
+                    p.price,
+                    p.description,
+                    p.status,
+                    p.slug,
+                    p.cover AS img,
+                    GROUP_CONCAT(pi.image_url) AS images,
+                    COALESCE(p.discount, 0) AS discount,
+                    COUNT(r.id) AS total_ratings,
+                    COALESCE(AVG(r.star), 5) AS average_rating
+                  FROM
+                    Product p
+                  LEFT JOIN product_images pi ON p.id = pi.product_id
+                  LEFT JOIN
+                    Comment r
+                  ON
+                    p.id = r.product_id
+                  WHERE p.slug = '$slug'
+                  GROUP BY
+                    p.id, p.product_name, p.price, p.description, p.status, p.cover, p.discount";
+
+        $result = $this->db->query($query);
+        $data = [];
+    
+        if ($result && $result->num_rows > 0) {
+            while ($row = $result->fetch_assoc()) {
+                $data[] = [
+                    'id' => (int) $row["id"],
+                    'name' => $row["name"],
+                    'price' => (float) $row["price"],
+                    'description' => $row["description"],
+                    'status' => $row["status"],
+                    'slug' => $row["slug"],
+                    'img' => $row["img"],
+                    'images' => explode(',', $row["images"]),
+                    'discount' => (int) $row["discount"],
+                    'total_ratings' =>(int) $row["total_ratings"],
+                    'average_rating' => round((float) $row["average_rating"], 2)
+                ];
+            }
+        } else {
             return ['status' => 400,
                 'details' => [
                     'message' => 'Product not found'

@@ -2,7 +2,6 @@
 
 use MVC\Controller;
 require './System/MVC/Controller.php';
-require 'config_session.php';
 
 class Authentication extends Controller {
     // api endpoint: /login
@@ -18,6 +17,10 @@ class Authentication extends Controller {
             return;
         }
 
+        if ($this->isUserSignedInBefore()) {
+            return;
+        }
+
         $userData = $model->getUser();
         if (!$userData) {
             $this->response->sendStatus(401);
@@ -27,47 +30,29 @@ class Authentication extends Controller {
             return;
         }
 
-        if ($this->isUserSignedInBefore()) {
-            return;
-        }
-
-        // Create our own session id
-        $newSessionId = session_create_id();
-        $sessionId = $newSessionId . "_" . $userData[0]['Role'];
-
-        // Set session id
-//        session_id($sessionId); // This code will give warning in the JSON body
-        $current_session_id = session_id();
-
-
-        $_SESSION["user_id"] = $userData[0]['Id'];
-        $_SESSION["role"] = $userData[0]['Role'];
-
+        
+        
+        
         // Send Response if successful
         $this->response->sendStatus(200);
         $this->response->setContent([
             'message' => 'Authentication succeeded',
-            'sessionId' => $current_session_id,
             'data' => $userData,
         ]);
+        $this->response->setcookie('access_token', $userData[0]['token'], time() + 3600, '/');
     }
 
     // api endpoint: /logout
     public function logout() {
-        if (isset($_SESSION["user_id"])) {
-            unset($_SESSION["user_id"]);
-            unset($_SESSION["role"]);
-            session_destroy();
-            $this->response->sendStatus(200);
-            $this->response->setContent([
-                'message' => 'Logout succeeded'
-            ]);
-        } else {
-            $this->response->sendStatus(401);
-            $this->response->setContent([
-                'message' => 'You are not logged in'
-            ]);
-        }
+        // Clear token in database
+        $model = $this->model('authentication');
+        $model->clearToken($_COOKIE['access_token']);
+
+        $this->response->sendStatus(200);
+        $this->response->setContent([
+            'message' => 'You are logged out'
+        ]);
+        $this->response->setcookie('access_token', '', time() - 3600, '/');
     }
 
     // api endpoint: /showinfo
@@ -118,12 +103,19 @@ class Authentication extends Controller {
     }
 
     private function isUserSignedInBefore() {
-        if (isset($_SESSION["user_id"]) && isset($_SESSION["role"])) {
-            $this->response->sendStatus(400);
-            $this->response->setContent([
-                'message' => 'You are already logged in'
-            ]);
-            return true;
-        }
+        // Check if access_token in cookie is valid
+        if (isset($_COOKIE['access_token'])) {
+            $model = $this->model('authentication');
+            $userData = $model->getUserByAccessToken($_COOKIE['access_token']);
+            if ($userData) {
+                $this->response->sendStatus(200);
+                $this->response->setContent([
+                    'message' => 'You are already signed in',
+                    'data' => $userData,
+                ]);
+                return true;
+            }
+        } 
+        return false;
     }
 }
