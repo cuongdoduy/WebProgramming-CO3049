@@ -39,6 +39,23 @@ const Order = async (req: NextApiRequest, res: NextApiResponse<any>) => {
     } catch (error) {
       console.log(error)
     }
+  } else if (req.method == 'DELETE') {
+    try {
+      const { id } = req.query
+      const response = await fetch(
+        `${process.env.BACKEND_URL}/customers/${id}`,
+        {
+          method: 'DELETE',
+          headers: {
+            'Content-Type': 'application/json',
+          },
+        }
+      )
+      const data = await response.json()
+      return res.status(200).json(data)
+    } catch (error) {
+      console.log(error)
+    }
   } else {
     return res.status(405).json({
       message: 'Method not allowed',

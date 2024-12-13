@@ -219,18 +219,33 @@ const ProductDescription: React.FC<ProductDescriptionProps> = ({ data }) => {
           </div>
         </div>
         <div onClick={handleAddToCart}>
-          <PrimaryButton title="Add To Cart" className="!min-w-[200px] py-4" />
+          <PrimaryButton title="Add To Cart" className="min-w-[150px] lg:min-w-[200px] py-4" />
         </div>
 
         {isItemExist(id) ? (
           <div
-            className="border-[1px] border-[black] h-full p-2 rounded-[4px] cursor-pointer"
+            className="border-[1px] border-[black] h-full p-2 rounded-[4px] cursor-pointer hidden md:block"
             onClick={handleRemoveFromWishlist}>
             <SolidHeartIcon className="h-full w-6 text-[#DB4444]" />
           </div>
         ) : (
           <div
-            className="border-[1px] border-[black] h-full p-2 rounded-[4px] cursor-pointer"
+            className="border-[1px] border-[black] h-full p-2 rounded-[4px] cursor-pointer hidden hidden md:block"
+            onClick={handleAddToWishlist}>
+            <HeartIcon className="h-full w-6" />
+          </div>
+        )}
+      </div>
+      <div className="md:hidden my-4 max-w-[40px]">
+        {isItemExist(id) ? (
+          <div
+            className="border-[1px] border-[black] p-2 rounded-[4px] cursor-pointer"
+            onClick={handleRemoveFromWishlist}>
+            <SolidHeartIcon className="h-full w-6 text-[#DB4444]" />
+          </div>
+        ) : (
+          <div
+            className="border-[1px] border-[black] p-2 rounded-[4px] cursor-pointer"
             onClick={handleAddToWishlist}>
             <HeartIcon className="h-full w-6" />
           </div>

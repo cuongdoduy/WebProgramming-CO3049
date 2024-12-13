@@ -122,7 +122,7 @@ const About = () => {
           <a href="#">About</a>
         </Breadcrumbs>
         <div className="grid grid-cols-12 gap-x-4 items-center">
-          <div className="col-span-6 pr-12">
+          <div className="col-span-12 lg:col-span-6 lg:pr-12">
             <Typography
               as="h1"
               variant="h1"
@@ -148,7 +148,7 @@ const About = () => {
               ranging from consumer.
             </Typography>
           </div>
-          <div className="col-span-6">
+          <div className="col-span-12 lg:col-span-6">
             <Image
               src={SideImage}
               alt="Side Image"

@@ -1,4 +1,4 @@
-import React, { useEffect, useState } from 'react'
+import React from 'react'
 import Image from 'next/image'
 import Head from 'next/head'
 import { signIn } from 'next-auth/react'
@@ -10,20 +10,11 @@ import { toast, ToastContainer } from 'react-toastify'
 import NavbarWithMegaMenu from '@/components/Navbar/Navbar'
 import Footer from '@/components/Footer/Footer'
 import SidebarImage from 'public/images/login_side_picture.png'
-import { Button, Typography } from '@material-tailwind/react'
-import GoogleLogo from 'public/images/google.png'
+import { Typography } from '@material-tailwind/react'
 
 const Signup = () => {
   const formSchema = z
     .object({
-      username: z
-        .string()
-        .min(3, {
-          message: 'Username must be at least 3 characters long',
-        })
-        .max(20, {
-          message: 'Username must be at most 20 characters long',
-        }),
       email: z.string().email({
         message: 'Invalid email address',
       }),
@@ -55,20 +46,20 @@ const Signup = () => {
   })
 
   const onSubmit = async (data: UserFormValues) => {
-    const { username, email, password, confirm_password } = data
+    const { email, password, confirm_password } = data
     const res = await fetch('/api/sign-up', {
       method: 'POST',
       headers: {
         'Content-Type': 'application/json',
       },
-      body: JSON.stringify({ username, email, password, confirm_password }),
+      body: JSON.stringify({ email, password, confirm_password }),
     })
     const response = await res.json()
-    if (response.statusCode === 200) {
+    if (res.status === 200) {
       toast.success(response.message)
       setTimeout(() => {
         signIn('credentials', {
-          username,
+          username: email,
           password,
           callbackUrl: '/',
         })
@@ -78,29 +69,16 @@ const Signup = () => {
     }
   }
 
-  const [callBackURL, setCallBackURL] = useState('')
-
-  useEffect(() => {
-    const callbackurl =
-      window && new URLSearchParams(window.location.search).get('callbackUrl')
-    const error =
-      window && new URLSearchParams(window.location.search).get('error')
-    if (error) {
-      toast.error('Invalid credentials, please try again')
-    }
-    setCallBackURL(callbackurl || '/')
-  }, [])
-
   return (
     <>
       <MetaTags />
       <NavbarWithMegaMenu />
       <main className="relative">
         <div className="grid grid-cols-2 gap-x-6 mt-[40px] mb-[80px]">
-          <div>
+          <div className='hidden lg:block'>
             <Image src={SidebarImage} alt="sidebar" width={600} height={400} />
           </div>
-          <div>
+          <div className='col-span-2 lg:col-span-1 w-[80%] mx-auto lg:w-full'>
             <div>
               <header className="flex items-center justify-start mx-auto flex-wrap">
                 <Typography as="h4" variant="h4" className="cursor-pointer">
@@ -116,20 +94,6 @@ const Signup = () => {
                 action="/api/sign-up"
                 onSubmit={handleSubmit(onSubmit)}>
                 <div className="flex flex-col gap-2 mb-1">
-                  <h6 className="block font-sans text-base antialiased font-semibold leading-relaxed tracking-normal text-blue-gray-900">
-                    Username
-                  </h6>
-                  <div className="relative h-[60px] w-full min-w-[200px]">
-                    <input
-                      placeholder="john_doe"
-                      {...register('username')}
-                      className="peer h-11 w-full rounded-md border border-blue-gray-200 border-t-transparent !border-t-blue-gray-200 bg-transparent px-3 py-3 font-sans text-sm font-normal text-blue-gray-700 outline outline-0 transition-all placeholder-shown:border placeholder-shown:border-blue-gray-200 placeholder-shown:border-t-blue-gray-200 focus:border-2 focus:border-gray-900 focus:border-t-transparent focus:!border-t-gray-900 focus:outline-0 disabled:border-0 disabled:bg-blue-gray-50"
-                    />
-                    <label className="before:content[' '] after:content[' '] pointer-events-none absolute left-0 -top-1.5 flex h-full w-full select-none !overflow-visible truncate text-[11px] font-normal leading-tight text-gray-500 transition-all before:pointer-events-none before:mt-[6.5px] before:mr-1 before:box-border before:block before:h-1.5 before:w-2.5 before:rounded-tl-md before:border-t before:border-l before:border-blue-gray-200 before:transition-all before:content-none after:pointer-events-none after:mt-[6.5px] after:ml-1 after:box-border after:block after:h-1.5 after:w-2.5 after:flex-grow after:rounded-tr-md after:border-t after:border-r after:border-blue-gray-200 after:transition-all after:content-none peer-placeholder-shown:text-sm peer-placeholder-shown:leading-[4.1] peer-placeholder-shown:text-blue-gray-500 peer-placeholder-shown:before:border-transparent peer-placeholder-shown:after:border-transparent peer-focus:text-[11px] peer-focus:leading-tight peer-focus:text-gray-900 peer-focus:before:border-t-2 peer-focus:before:border-l-2 peer-focus:before:!border-gray-900 peer-focus:after:border-t-2 peer-focus:after:border-r-2 peer-focus:after:!border-gray-900 peer-disabled:text-transparent peer-disabled:before:border-transparent peer-disabled:after:border-transparent peer-disabled:peer-placeholder-shown:text-blue-gray-500"></label>
-                    {errors.username?.message && (
-                      <ErrorMessage message={errors.username.message} />
-                    )}
-                  </div>
                   <h6 className="block font-sans text-base antialiased font-semibold leading-relaxed tracking-normal text-blue-gray-900">
                     Email Address
                   </h6>
@@ -183,21 +147,7 @@ const Signup = () => {
                   type="submit">
                   Create Account
                 </button>
-                <div className='max-w-screen-lg mt-4 mb-2 w-80 sm:w-96'>
-                <Button
-                  variant="outlined"
-                  size="lg"
-                  className="mt-6 flex h-12 items-center justify-center gap-2 border-gray-500"
-                  fullWidth
-                  onClick={async () =>
-                    await signIn('google', {
-                      callbackUrl: `${callBackURL}`,
-                    })
-                  }>
-                  <Image src={GoogleLogo} alt="google" className="h-6 w-6" />{' '}
-                  Login with google
-                </Button>
-              </div>
+                <div className="max-w-screen-lg mt-4 mb-2 w-80 sm:w-96"></div>
                 <div className="block mt-4 font-sans text-base antialiased font-normal leading-relaxed text-center text-gray-700">
                   Already have an account? &nbsp;
                   <span

@@ -60,11 +60,11 @@ const ProductDetail: React.FC<{
           <Link href="/products">Products</Link>
           <Link href={`/products/${data.slug}`}>{data.name}</Link>
         </Breadcrumbs>
-        <div className="mt-[60px] grid grid-cols-12 gap-x-6">
-          <div className="col-span-8">
+        <div className="mt-[60px] grid grid-cols-12 gap-6">
+          <div className="col-span-12 lg:col-span-6">
             <ProductImageList productImages={data.images} />
           </div>
-          <div className="col-span-4">
+          <div className="col-span-12 lg:col-span-6">
             <ProductDescription data={data} />
           </div>
         </div>
@@ -177,7 +177,7 @@ const MetaTags = () => {
 }
 
 export const getStaticPaths: GetStaticPaths = async () => {
-  const res = await fetch(`${process.env.BACKEND_URL}/products/1`)
+  const res = await fetch(`${process.env.BACKEND_URL}/products`)
   const data = await res.json()
 
   const paths = data.data.map(

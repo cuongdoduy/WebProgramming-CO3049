@@ -51,13 +51,13 @@ const ProductSlider: React.FC<{
       {
         breakpoint: 768,
         settings: {
-          slidesToShow: 2,
+          slidesToShow: 3,
         },
       },
       {
         breakpoint: 480,
         settings: {
-          slidesToShow: 1,
+          slidesToShow: 2,
         },
       },
     ],
@@ -69,7 +69,7 @@ const ProductSlider: React.FC<{
       <Slider {...settings} ref={sliderRef}>
         {data.map((item, index) => (
           <div key={index} className="">
-            <div className="max-w-[270px]">
+            <div className="max-w-[270px] mx-2 lg:mx-0">
               <Product {...item} />
             </div>
           </div>

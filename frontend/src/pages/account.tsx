@@ -5,6 +5,7 @@ import React, { Fragment, useEffect } from 'react'
 import AccountInformation from '@/page-sections/AccountPage/AccountInformation'
 import OrderHistory from '@/page-sections/AccountPage/OrderHistory'
 import { useSession } from 'next-auth/react'
+import Link from 'next/link'
 const AccountNavigation: Array<string> = [
   'Account Information',
   'Order History',
@@ -114,14 +115,14 @@ const Account: React.FC = () => {
       <NavbarWithMegaMenu />
       <div className="w-[80%] mx-auto my-12">
         <Breadcrumbs className="bg-white p-0">
-          <a href="#" className="opacity-60">
+          <Link href="/" className="opacity-60">
             Home
-          </a>
-          <a href="#">My Account</a>
+          </Link>
+          <Link href="#">My Account</Link>
         </Breadcrumbs>
         <div className="grid grid-cols-12 gap-x-4 my-12">
-          <div className="col-span-3">
-            <div className="flex flex-col items-start">
+          <div className="col-span-12 lg:col-span-3">
+            <div className="flex justify-between lg:flex-col lg:items-start">
               {AccountNavigation.map((nav, index) => (
                 <Typography
                   as="h4"
@@ -139,7 +140,7 @@ const Account: React.FC = () => {
               ))}
             </div>
           </div>
-          <div className="col-span-9">
+          <div className="col-span-12 lg:col-span-9">
             {activeTab === 0 && (
               <AccountInformation
                 userInformation={userInformation}

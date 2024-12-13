@@ -179,7 +179,7 @@ const Product: React.FC<{
             )}
           </div>
 
-          <div className="flex flex-col items-center p-8 h-auto min-h-[240px] max-h-[240px]">
+          <div className="flex flex-col items-center p-8 h-auto min-h-[150px] lg:min-h-[240px] max-h-[240px]">
             <div className="mt-auto">
               <Image src={image} alt={title} width={178} height={129} />
             </div>

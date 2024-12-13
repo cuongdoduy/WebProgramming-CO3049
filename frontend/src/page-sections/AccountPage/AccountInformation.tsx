@@ -1,5 +1,5 @@
 import PrimaryButton from '@/components/PrimaryButton'
-import { Button, Typography } from '@material-tailwind/react'
+import { Typography } from '@material-tailwind/react'
 import React from 'react'
 
 const AccountInformation: React.FC<{
@@ -32,7 +32,7 @@ const AccountInformation: React.FC<{
 
   return (
     <div className="w-full shadow-lg rounded-md min-h-[40vh]">
-      <div className="w-[80%] mx-auto py-6">
+      <div className="w-[90%] lg:w-[80%] mx-auto py-6">
         <Typography
           as="h4"
           variant="p"
@@ -40,7 +40,7 @@ const AccountInformation: React.FC<{
           Edit Your Profile
         </Typography>
         <div className="grid grid-cols-2 gap-[20px] py-4">
-          <div className="relative w-full max-w-[350px]">
+          <div className="col-span-2 md:col-span-1 relative w-full max-w-[350px]">
             <label>
               <h6 className="block mb-1 font-sans text-base antialiased font-semibold leading-relaxed tracking-normal text-blue-gray-900">
                 Full Name
@@ -54,7 +54,7 @@ const AccountInformation: React.FC<{
               />
             </label>
           </div>
-          <div className="relative w-full max-w-[350px] ml-auto">
+          <div className="col-span-2 md:col-span-1 relative w-full max-w-[350px] ml-auto">
             <label>
               <h6 className="block mb-1 font-sans text-base antialiased font-semibold leading-relaxed tracking-normal text-blue-gray-900">
                 Email
@@ -68,7 +68,7 @@ const AccountInformation: React.FC<{
               />
             </label>
           </div>
-          <div className="relative w-full max-w-[350px]">
+          <div className="col-span-2 md:col-span-1 relative w-full max-w-[350px]">
             <label>
               <h6 className="block mb-1 font-sans text-base antialiased font-semibold leading-relaxed tracking-normal text-blue-gray-900">
                 Address
@@ -82,7 +82,7 @@ const AccountInformation: React.FC<{
               />
             </label>
           </div>
-          <div className="relative w-full max-w-[350px] ml-auto">
+          <div className="col-span-2 md:col-span-1 relative w-full max-w-[350px] ml-auto">
             <label>
               <h6 className="block mb-1 font-sans text-base antialiased font-semibold leading-relaxed tracking-normal text-blue-gray-900">
                 Phone Number
@@ -131,14 +131,10 @@ const AccountInformation: React.FC<{
           </div>
         </div>
         <div className="w-fit ml-auto flex space-x-4 my-4">
-          <Button className="!py-4 min-w-[250px] bg-white shadow-none text-black hover:shadow-none">
-            {' '}
-            Cancel{' '}
-          </Button>
           <div onClick={handleSave}>
             <PrimaryButton
               title="Save Changes"
-              className="!py-4 min-w-[250px]"
+              className="!py-4 lg:min-w-[250px]"
             />
           </div>
         </div>

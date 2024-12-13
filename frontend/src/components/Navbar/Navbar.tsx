@@ -3,7 +3,6 @@ import {
   Navbar,
   Collapse,
   Typography,
-  Button,
   IconButton,
   List,
   ListItem,
@@ -17,17 +16,24 @@ import {
 import Link from 'next/link'
 import { WishlistContext } from '@/contexts/WishlistContext'
 import { CartContext } from '@/contexts/CartContext'
-import { useSession } from 'next-auth/react'
+import { signOut, useSession } from 'next-auth/react'
 import ProfileMenu from '../UserMenu'
 
 const NavList = () => {
   const { data: session } = useSession()
   return (
-    <List className="mt-4 mb-6 p-0 lg:mt-0 lg:mb-0 lg:flex-row lg:p-1">
+    <List className="lg:mt-4 lg:mb-6 p-0 lg:mt-0 lg:mb-0 lg:flex-row lg:p-1">
       <Link href={'/'} className="m-0">
         <Typography variant="h6" color="blue-gray" className="font-medium">
           <ListItem className="flex items-center gap-2 py-2 px-8">
             Home
+          </ListItem>
+        </Typography>
+      </Link>
+      <Link href={'/products'} className="m-0">
+        <Typography variant="h6" color="blue-gray" className="font-medium">
+          <ListItem className="flex items-center gap-2 py-2 px-8">
+            Products
           </ListItem>
         </Typography>
       </Link>
@@ -155,13 +161,37 @@ const NavbarWithMegaMenu = () => {
       </div>
       <Collapse open={openNav}>
         <NavList />
-        <div className="flex w-full flex-nowrap items-center gap-2 lg:hidden">
-          <Button variant="outlined" size="sm" color="blue-gray" fullWidth>
-            Log In
-          </Button>
-          <Button variant="gradient" size="sm" fullWidth>
-            Sign In
-          </Button>
+        {/* <hr className="my-2 border border-gray-400" /> */}
+        <div className="flex w-full flex-col items-start space-y-1 lg:hidden">
+          {session && (
+            <>
+              <Link href={'/account'} className="m-0">
+                <Typography
+                  variant="h6"
+                  color="blue-gray"
+                  className="font-medium">
+                  <ListItem className="flex items-center gap-2 py-2 px-8">
+                    Account
+                  </ListItem>
+                </Typography>
+              </Link>
+              <button
+                onClick={() =>
+                  signOut({
+                    callbackUrl: '/',
+                  })
+                }>
+                <Typography
+                  variant="h6"
+                  color="blue-gray"
+                  className="font-medium">
+                  <ListItem className="flex items-center gap-2 py-2 px-8">
+                    Log out
+                  </ListItem>
+                </Typography>
+              </button>
+            </>
+          )}
         </div>
       </Collapse>
       <hr className="my-2 border border-gray-400" />

@@ -1,7 +1,6 @@
 import Footer from '@/components/Footer/Footer'
 import NavbarWithMegaMenu from '@/components/Navbar/Navbar'
 import constants from '@/constant/schema-data'
-import Countdown from '@/page-sections/HomePage/Countdown'
 import ProductSlider from '@/page-sections/HomePage/ProductSlider'
 import { Typography } from '@material-tailwind/react'
 import Head from 'next/head'
@@ -14,8 +13,8 @@ import Image from 'next/image'
 import PrimaryButton from '@/components/PrimaryButton'
 import Link from 'next/link'
 import ProductList from '@/page-sections/HomePage/ProductList'
-import { useSession } from 'next-auth/react'
 import { GetStaticProps } from 'next'
+import { useSession } from 'next-auth/react'
 
 const Home: React.FC<{
   data: Array<{
@@ -33,31 +32,10 @@ const Home: React.FC<{
       slug: string
     }>
   }>
-}> = ({data}) => {
-  console.log(data)
+}> = ({ data }) => {
   const { data: session } = useSession()
-  console.log(session)
-  // const [forYouItems, setForYouItems] = useState<
-  //   Array<{
-  //     id: number
-  //     title: string
-  //     price: number
-  //     image: string
-  //     discount: number
-  //     rating: number
-  //     reviews: number
-  //     slug: string
-  //   }>
-  // >([])
 
-  // useEffect(() => {
-  //   const fetchData = async () => {
-  //     const response = await fetch('/api/products/for-you')
-  //     const data = await response.json()
-  //     setForYouItems(data)
-  //   }
-  //   fetchData()
-  // }, [])
+  console.log(session)
 
   const sliderRef = React.useRef<Slider>(null)
 
@@ -76,6 +54,15 @@ const Home: React.FC<{
         <NavbarWithMegaMenu />
         <div className="min-h-screen my-12">
           <div className="my-12 mb-6 flex flex-col w-full overflow-hidden">
+            {session?.user?.role?.toLowerCase() === 'admin' && (
+              <div className="ml-auto mr-[120px]">
+                <Link href="/admin">
+                  <div className="text-[#DB4444] text-[20px] font-normal p-2 border border-gray-600">
+                    Admin Dashboard
+                  </div>
+                </Link>
+              </div>
+            )}
             <div className="flex items-center justify-start gap-x-4 mx-auto w-[80vw]">
               <div className="w-[20px] h-[50px] bg-[#DB4444] rounded-md"></div>
               <Typography
@@ -87,10 +74,13 @@ const Home: React.FC<{
             </div>
             <div className="flex  mx-auto w-[80vw] items-center justify-between">
               <div className="flex items-center space-x-[40px]">
-                <Typography as="h1" variant="h1">
+                <Typography
+                  as="h1"
+                  variant="h1"
+                  className="text-[24px] md:text-[32px] lg:text-[40px]">
                   Flash Sales
                 </Typography>
-                <Countdown />
+                {/* <Countdown /> */}
               </div>
               <div className="flex justify-between min-w-[100px]">
                 <button
@@ -116,9 +106,7 @@ const Home: React.FC<{
               </div>
             </div>
             <div className="w-[100vw] translate-x-[10vw] mt-6">
-              <ProductSlider data={
-                data[0].products
-              } sliderRef={sliderRef} />
+              <ProductSlider data={data[0].products} sliderRef={sliderRef} />
             </div>
             <div className="mt-6 mx-auto w-[80vw] flex items-center justify-center">
               <Link href={'/products'}>
@@ -140,14 +128,17 @@ const Home: React.FC<{
             </div>
             <div className="flex  mx-auto w-[80vw] items-center justify-between">
               <div className="flex items-center justify-between w-full">
-                <Typography as="h1" variant="h1">
+                <Typography
+                  as="h1"
+                  variant="h1"
+                  className="text-[24px] md:text-[32px] lg:text-[40px]">
                   Best Selling Products
                 </Typography>
                 <div className="">
                   <Link href={'/products'}>
                     <PrimaryButton
                       title="View All"
-                      className="min-w-[250px] !py-4"
+                      className="min-w-[250px] !py-4 hidden lg:block"
                     />
                   </Link>
                 </div>
@@ -155,6 +146,14 @@ const Home: React.FC<{
             </div>
             <div className="w-[80vw] mx-auto mt-6">
               <ProductList data={data[1].products} />
+            </div>
+            <div className="my-4 mx-auto">
+              <Link href={'/products'}>
+                <PrimaryButton
+                  title="View All"
+                  className="min-w-[250px] !py-4 lg:hidden"
+                />
+              </Link>
             </div>
             <hr className="my-12 border-[1px] border-[gray] opacity-50 mx-auto w-[80vw]" />
             <div className="flex items-center justify-start gap-x-4 mx-auto w-[80vw]">
@@ -168,14 +167,17 @@ const Home: React.FC<{
             </div>
             <div className="flex  mx-auto w-[80vw] items-center justify-between">
               <div className="flex items-center justify-between w-full">
-                <Typography as="h1" variant="h1">
+                <Typography
+                  as="h1"
+                  variant="h1"
+                  className="text-[24px] md:text-[32px] lg:text-[40px]">
                   Explore Our Products
                 </Typography>
                 <div className="">
                   <Link href={'/products'}>
                     <PrimaryButton
                       title="View All"
-                      className="min-w-[250px] !py-4"
+                      className="min-w-[250px] !py-4 hidden lg:block"
                     />
                   </Link>
                 </div>
@@ -183,6 +185,14 @@ const Home: React.FC<{
             </div>
             <div className="w-[80vw] mx-auto mt-6">
               <ProductList data={data[2].products} />
+            </div>
+            <div className="my-4 mx-auto">
+              <Link href={'/products'}>
+                <PrimaryButton
+                  title="View All"
+                  className="min-w-[250px] !py-4 lg:hidden"
+                />
+              </Link>
             </div>
           </div>
         </div>

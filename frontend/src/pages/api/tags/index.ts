@@ -1,46 +1,27 @@
 import type { NextApiRequest, NextApiResponse } from 'next'
 
-const GetTags = async (
-  req: NextApiRequest,
-  res: NextApiResponse<any>
-) => {
+const GetTags = async (req: NextApiRequest, res: NextApiResponse<any>) => {
   if (req.method == 'GET') {
     try {
-      const { currentPage } = req.query
-      const response = await fetch(
-        `${process.env.BACKEND_URL}/products/${currentPage || 1}`,
-        {
-          method: 'GET',
-        }
-      )
+      const response = await fetch(`${process.env.BACKEND_URL}/tags`, {
+        method: 'GET',
+      })
       const data = await response.json()
-      const productData = data.data.map(
-        (product: {
+      const tagData = data.data.map(
+        (tag: {
           id: number
           name: string
-          price: number
+
           description: string
-          status: string
-          img: string
-          discount: number
-          total_ratings: number
-          average_rating: number
-          slug: string
         }) => {
           return {
-            id: product.id,
-            title: product.name,
-            price: product.price,
-            discount: product.discount,
-            quantity: 1,
-            image: product.img,
-            rating: product.average_rating,
-            reviews: product.total_ratings,
-            slug: product.slug,
+            id: tag.id,
+            title: tag.name,
+            description: tag.description,
           }
         }
       )
-      return res.status(200).json(productData)
+      return res.status(200).json(tagData)
     } catch (error) {
       console.log(error)
     }

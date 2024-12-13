@@ -36,6 +36,27 @@ const Order = async (req: NextApiRequest, res: NextApiResponse<any>) => {
     } catch (error) {
       console.log(error)
     }
+  } else if (req.method == 'GET') {
+    try {
+      const { page, limit, status } = req.query
+      let endpoint = `${process.env.BACKEND_URL}/order`
+      if (page && limit) {
+        endpoint = endpoint + `?page=${page}&limit=${limit}`
+      }
+      if (status) {
+        endpoint = endpoint + `&status=${status}`
+      }
+      const response = await fetch(endpoint, {
+        method: 'GET',
+        headers: {
+          'Content-Type': 'application/json',
+        },
+      })
+      const data = await response.json()
+      return res.status(response.status).json(data)
+    } catch (error) {
+      console.log(error)
+    }
   } else {
     return res.status(405).json({
       message: 'Method not allowed',

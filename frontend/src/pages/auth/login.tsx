@@ -1,12 +1,10 @@
 import React, { useEffect, useState } from 'react'
 import Image from 'next/image'
 import Link from 'next/link'
-import { Button, Typography } from '@material-tailwind/react'
-import GoogleLogo from 'public/images/google.png'
+import { Typography } from '@material-tailwind/react'
 import Head from 'next/head'
 import { GetServerSidePropsContext, InferGetServerSidePropsType } from 'next'
 import { getCsrfToken } from 'next-auth/react'
-import { signIn } from 'next-auth/react'
 import { toast } from 'react-toastify'
 import NavbarWithMegaMenu from '@/components/Navbar/Navbar'
 import Footer from '@/components/Footer/Footer'
@@ -35,7 +33,7 @@ const Login = ({
         <NavbarWithMegaMenu />
         <main>
           <div className="grid grid-cols-12 mt-[40px] mb-[80px]">
-            <div className="col-span-6">
+            <div className="hidden lg:block col-span-6">
               <Image
                 src={SidebarImage}
                 alt="sidebar"
@@ -43,7 +41,7 @@ const Login = ({
                 height={400}
               />
             </div>
-            <div className="col-span-6">
+            <div className="col-span-12 lg:col-span-6 w-[80%] mx-auto lg:w-full lg:mx-0">
               <header className="flex items-center justify-start mx-auto flex-wrap">
                 <Typography as="h4" variant="h4" className="cursor-pointer">
                   Login to
@@ -67,7 +65,7 @@ const Login = ({
                   <div className="relative w-full min-w-[200px]">
                     <label>
                       <h6 className="block mb-1 font-sans text-base antialiased font-semibold leading-relaxed tracking-normal text-blue-gray-900">
-                        Username or Email
+                        Email
                       </h6>
                       <input
                         name="username"
@@ -116,22 +114,6 @@ const Login = ({
                   </Link>
                 </p>
               </form>
-              <hr className="my-6 border border-gray-200 max-w-screen-lg mt-4 mb-2 w-80 sm:w-96" />
-              <div className='max-w-screen-lg mt-4 mb-2 w-80 sm:w-96'>
-                <Button
-                  variant="outlined"
-                  size="lg"
-                  className="mt-6 flex h-12 items-center justify-center gap-2 border-[#0000000F]"
-                  fullWidth
-                  onClick={async () =>
-                    await signIn('google', {
-                      callbackUrl: `${callBackURL}`,
-                    })
-                  }>
-                  <Image src={GoogleLogo} alt="google" className="h-6 w-6" />{' '}
-                  Login with google
-                </Button>
-              </div>
             </div>
           </div>
         </main>

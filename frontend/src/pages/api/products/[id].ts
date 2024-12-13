@@ -84,6 +84,40 @@ const GetProductForYou = async (
     //   message: 'Cart items',
     //   data: product_data,
     // })
+  } else if (req.method == 'PUT') {
+    const { id } = req.query
+    try {
+      const {
+        name,
+        price,
+        description,
+        status,
+        discount,
+        cover,
+        images,
+        category_id,
+      } = req.body
+      const response = await fetch(`${process.env.BACKEND_URL}/products/${id}`, {
+        method: 'PUT',
+        headers: {
+          'Content-Type': 'application/json',
+        },
+        body: JSON.stringify({
+          name,
+          price,
+          description,
+          status,
+          discount,
+          cover,
+          images,
+          category_id,
+        }),
+      })
+      const data = await response.json()
+      return res.status(response.status).json(data)
+    } catch (error) {
+      console.log(error)
+    }
   } else {
     return res.status(405).json({
       message: 'Method not allowed',

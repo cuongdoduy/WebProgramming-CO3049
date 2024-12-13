@@ -18,9 +18,9 @@ const Contact = () => {
           </a>
           <a href="#">Contact</a>
         </Breadcrumbs>
-        <div className="grid grid-cols-12 gap-x-12 mt-[60px] mb-[120px]">
-          <div className="col-span-4 flex flex-col shadow-lg py-8 px-4 rounded-lg">
-            <div className="">
+        <div className="grid grid-cols-12 lg:gap-x-12 mt-[60px] mb-[120px]">
+          <div className="col-span-12 lg:col-span-4 flex flex-col shadow-lg py-8 px-4 rounded-lg">
+            <div className="w-full">
               <div className="flex">
                 <div className="bg-[#DB4444] rounded-full w-[36px] h-[36px]">
                   <PhoneIcon className="text-white text-center m-2" />
@@ -78,9 +78,9 @@ const Contact = () => {
               </Typography>
             </div>
           </div>
-          <div className="col-span-8 flex flex-col shadow-lg py-8 px-4 rounded-lg">
+          <div className="col-span-12 lg:col-span-8 flex flex-col shadow-lg py-8 px-4 rounded-lg">
             <form className="grid grid-cols-12 p-1 gap-x-4 gap-y-4">
-              <div className="relative bg-gray-50 py-2 mr-4 col-span-4 border border-gray-300 rounded-md bg-gray-50">
+              <div className="relative bg-gray-50 py-2 mr-4 col-span-12 lg:col-span-4 border border-gray-300 rounded-md bg-gray-50">
                 <input
                   type="search"
                   id="default-search"
@@ -89,7 +89,7 @@ const Contact = () => {
                   required
                 />
               </div>
-              <div className="relative bg-gray-50 py-2 mr-4 col-span-4 border border-gray-300 rounded-md bg-gray-50">
+              <div className="relative bg-gray-50 py-2 mr-4 col-span-12 lg:col-span-4 border border-gray-300 rounded-md bg-gray-50">
                 <input
                   type="search"
                   id="default-search"
@@ -98,7 +98,7 @@ const Contact = () => {
                   required
                 />
               </div>
-              <div className="relative bg-gray-50 py-2 mr-4 col-span-4 border border-gray-300 rounded-md bg-gray-50">
+              <div className="relative bg-gray-50 py-2 mr-4 col-span-12 lg:col-span-4 border border-gray-300 rounded-md bg-gray-50">
                 <input
                   type="search"
                   id="default-search"
